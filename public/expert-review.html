@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Expert Review — InnovateX</title>
+<meta name="description" content="Interactive solution review workspace in the InnovateX decision workflow."/>
+<link rel="stylesheet" href="css/design.css"/>
+<link rel="stylesheet" href="css/upgrade.css"/>
+<style>
+  .review-layout{display:grid;grid-template-columns:minmax(320px,.95fr) minmax(420px,1.45fr);gap:22px;align-items:start}
+  .review-queue{position:sticky;top:86px}
+  .review-card{position:relative;padding:18px;border:1px solid var(--ix-border);border-radius:20px;background:var(--ix-surface);cursor:pointer;transition:.2s ease;margin-bottom:12px}
+  .review-card:hover{transform:translateY(-2px);border-color:#93c5fd;box-shadow:0 14px 30px rgba(15,23,42,.08)}
+  .review-card.active{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.10),0 14px 30px rgba(15,23,42,.08)}
+  .review-card .score{font-size:25px;font-weight:900;color:#4f46e5;line-height:1}
+  .review-status{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800;background:#f1f5f9;color:#64748b}
+  .review-status.shortlist{background:#ecfdf5;color:#15803d}.review-status.clarify{background:#fff7ed;color:#c2410c}.review-status.reject{background:#fff1f2;color:#be123c}.review-status.pilot{background:#eef2ff;color:#4338ca}
+  .review-workspace{border:1px solid var(--ix-border);border-radius:24px;background:var(--ix-surface);box-shadow:0 18px 50px rgba(15,23,42,.08);overflow:hidden}
+  .review-workspace-head{padding:22px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border-bottom:1px solid var(--ix-border)}
+  .review-score-ring{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#4f46e5 var(--score),#e2e8f0 0);position:relative;flex:0 0 82px}
+  .review-score-ring:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff}
+  .review-score-ring strong{position:relative;z-index:1;font-size:24px;color:#312e81}
+  .review-dims{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}
+  .review-dim{padding:10px;border:1px solid var(--ix-border);border-radius:14px;background:#fff}.review-dim small{display:block;color:var(--ix-muted);font-size:10px;margin-bottom:4px}.review-dim strong{font-size:14px}
+  .review-form{padding:22px}.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.review-field label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ix-muted);margin-bottom:6px}
+  .review-field select,.review-field textarea,.review-field input{width:100%;border:1px solid var(--ix-border);border-radius:12px;padding:10px 11px;background:#fff;color:var(--ix-text);font:500 13px var(--font-sans);outline:none}
+  .review-field textarea{min-height:90px;resize:vertical}.review-field select:focus,.review-field textarea:focus,.review-field input:focus{border-color:#818cf8;box-shadow:0 0 0 3px rgba(99,102,241,.08)}
+  .review-evidence{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .evidence-box{padding:12px;border-radius:14px;background:#f8fafc;border:1px solid var(--ix-border)}.evidence-box strong{display:block;font-size:11px;margin-bottom:5px}.evidence-box span{font-size:12px;color:var(--ix-muted);line-height:1.5}
+  .review-actions{display:flex;gap:9px;flex-wrap:wrap;padding-top:18px;margin-top:18px;border-top:1px solid var(--ix-border)}
+  .review-actions button{border:1px solid var(--ix-border);border-radius:12px;padding:10px 14px;background:#fff;font:700 12px var(--font-sans);cursor:pointer;transition:.18s ease}
+  .review-actions button:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.08)}
+  .review-actions .primary{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;border-color:transparent}.review-actions .success{background:#ecfdf5;color:#166534;border-color:#bbf7d0}.review-actions .warn{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.review-actions .danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+  .review-handoff{display:none;margin-top:18px;padding:15px;border-radius:16px;background:#eef2ff;border:1px solid #c7d2fe}.review-handoff.show{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+  @media(max-width:900px){.review-layout{grid-template-columns:1fr}.review-queue{position:static}.review-dims{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){.review-simple-guide{grid-template-columns:1fr!important}}
+  @media(max-width:560px){.review-grid,.review-evidence{grid-template-columns:1fr}.review-dims{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body data-page="expert-review">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+<nav class="navbar" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+      <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+    </a>
+    <div class="nav-actions"><div id="authArea" class="auth-area"></div><button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button></div>
+  </div>
+</nav>
+
+<main class="page-content container" style="padding-top:28px;padding-bottom:90px">
+  <div class="section-header" style="margin:26px 0 22px">
+    <div>
+      <div class="section-label">DECISION WORKSPACE · P001</div>
+      <h1 style="font-size:clamp(30px,4vw,46px);margin:0 0 7px">Expert Review <span class="accent">↗</span></h1>
+      <p style="max-width:700px;color:var(--ix-muted);line-height:1.65;margin:0">Check the solution in 3 simple steps: read the AI evidence, record your expert judgement, then choose what happens next.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn btn-outline btn-sm" href="ai-analysis.html">← Solution Analysis</a>
+      <a class="btn btn-primary btn-sm" href="procurement.html">Procurement &amp; Scale →</a>
+    </div>
+  </div>
+
+  <div class="review-simple-guide" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+    <div class="card" style="padding:13px"><strong>1 · Read</strong><div style="font-size:12px;color:var(--ix-muted);margin-top:3px">See the AI score, strengths and concerns.</div></div>
+    <div class="card" style="padding:13px"><strong>2 · Check</strong><div style="font-size:12px;color:var(--ix-muted);margin-top:3px">Rate feasibility, risk, fit and pilot readiness.</div></div>
+    <div class="card" style="padding:13px"><strong>3 · Decide</strong><div style="font-size:12px;color:var(--ix-muted);margin-top:3px">Shortlist, ask for clarification, pilot, or reject.</div></div>
+  </div>
+
+  <div class="review-layout">
+    <aside class="review-queue">
+      <div class="section-label">REVIEW QUEUE</div>
+      <div id="reviewQueue"></div>
+    </aside>
+
+    <section class="review-workspace" id="reviewWorkspace">
+      <div class="review-workspace-head">
+        <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start">
+          <div style="flex:1">
+            <div class="section-label">AI EVIDENCE</div>
+            <h2 id="reviewTitle" style="margin:0 0 5px;font-size:25px">Select a solution</h2>
+            <p id="reviewMeta" style="margin:0;color:var(--ix-muted);font-size:13px"></p>
+          </div>
+          <div class="review-score-ring" id="reviewScoreRing" style="--score:0%"><strong id="reviewScore">—</strong></div>
+        </div>
+        <div class="review-dims" id="reviewDims"></div>
+        <div class="review-evidence" id="reviewEvidence"></div>
+      </div>
+
+      <div class="review-form">
+        <div class="section-label">ASSESSMENT</div>
+        <div class="review-grid">
+          <div class="review-field"><label>Feasibility</label><select id="criterionFeasibility"><option value="5">5 · Strong</option><option value="4">4 · Good</option><option value="3">3 · Acceptable</option><option value="2">2 · Concern</option><option value="1">1 · Critical</option></select></div>
+          <div class="review-field"><label>Risk</label><select id="criterionRisk"><option value="5">5 · Low risk</option><option value="4">4 · Manageable</option><option value="3">3 · Moderate</option><option value="2">2 · High</option><option value="1">1 · Critical</option></select></div>
+          <div class="review-field"><label>Problem fit</label><select id="criterionDomain"><option value="5">5 · Strong fit</option><option value="4">4 · Good fit</option><option value="3">3 · Partial fit</option><option value="2">2 · Weak fit</option><option value="1">1 · Poor fit</option></select></div>
+          <div class="review-field"><label>Pilot readiness</label><select id="criterionPilot"><option value="5">5 · Ready</option><option value="4">4 · Nearly ready</option><option value="3">3 · Needs preparation</option><option value="2">2 · Significant work</option><option value="1">1 · Not ready</option></select></div>
+        </div>
+
+        <div class="review-grid" style="margin-top:14px">
+          <div class="review-field"><label>Evidence required before pilot</label><textarea id="reviewEvidenceInput" placeholder="e.g. Validate camera performance in low-light field conditions."></textarea></div>
+          <div class="review-field"><label>Reviewer notes</label><textarea id="reviewNotes" placeholder="Record the reasoning behind the review."></textarea></div>
+        </div>
+
+        <div class="review-actions">
+          <button class="success" data-action="shortlist">✓ Shortlist</button>
+          <button class="warn" data-action="clarify">? Request Clarification</button>
+          <button class="primary" data-action="pilot">→ Send to Pilot</button>
+          <button class="danger" data-action="reject">× Reject</button>
+        </div>
+
+        <div class="review-handoff" id="reviewHandoff">
+          <div><strong id="handoffTitle">Pilot handoff recorded</strong><div id="handoffText" style="font-size:12px;color:#4f46e5;margin-top:3px"></div></div>
+          <a href="pilot.html" class="btn btn-primary btn-sm">Open Pilot →</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="toast-container"></div>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/askix.js"></script>
+<script>
+(function(){
+  'use strict';
+  const KEY='ix_expert_reviews';
+  const solutions=(window.IX?.getSolutions('p001')||[]).slice(0,5);
+  const queue=document.getElementById('reviewQueue');
+  const state=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}};
+  const save=x=>localStorage.setItem(KEY,JSON.stringify(x));
+  let selected=solutions[0]?.id||null;
+
+  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const dims=[['relevance','Relevance',25],['innovation','Innovation',20],['feasibility','Feasibility',20],['impact','Impact',20],['scalability','Scalability',10],['cost','Cost Efficiency',5]];
+  const inputs={
+    feasibility:document.getElementById('criterionFeasibility'),
+    risk:document.getElementById('criterionRisk'),
+    domain:document.getElementById('criterionDomain'),
+    pilot:document.getElementById('criterionPilot'),
+    evidence:document.getElementById('reviewEvidenceInput'),
+    notes:document.getElementById('reviewNotes')
+  };
+
+  function reviewFor(id){return state()[id]||{}}
+  function statusLabel(r){
+    const d=r.decision||'Pending Review';
+    return d==='Approve for Shortlist'?'Shortlisted':d==='Request Clarification'?'Clarification':d==='Send to Pilot'?'Pilot Handoff':d==='Reject'?'Rejected':'Pending';
+  }
+  function statusClass(r){
+    const d=r.decision||'';
+    return d==='Approve for Shortlist'?'shortlist':d==='Request Clarification'?'clarify':d==='Send to Pilot'?'pilot':d==='Reject'?'reject':'';
+  }
+
+  function renderQueue(){
+    const saved=state();
+    queue.innerHTML=solutions.map((s,i)=>{
+      const r=saved[s.id]||{};
+      const team=window.IX.getTeam(s.team_id);
+      return `<button class="review-card ${s.id===selected?'active':''}" data-id="${s.id}" style="width:100%;text-align:left">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+          <div style="min-width:0"><div style="font-size:10px;color:var(--ix-muted);font-weight:800;text-transform:uppercase">Solution ${i+1}</div><h3 style="margin:4px 0 2px;font-size:16px">${esc(s.title)}</h3><div style="font-size:11px;color:var(--ix-muted)">${esc(team?.name||s.team)}</div></div>
+          <div class="score">${esc(s.ai_scores?.total)}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span style="font-size:10px;color:var(--ix-muted)">AI score / 100</span><span class="review-status ${statusClass(r)}">${esc(statusLabel(r))}</span></div>
+      </button>`;
+    }).join('');
+    queue.querySelectorAll('[data-id]').forEach(btn=>btn.addEventListener('click',()=>{selected=btn.dataset.id;renderQueue();loadSelected()}));
+  }
+
+  function loadSelected(){
+    const s=solutions.find(x=>x.id===selected);
+    if(!s)return;
+    const r=reviewFor(s.id);
+    const team=window.IX.getTeam(s.team_id);
+    document.getElementById('reviewTitle').textContent=s.title;
+    document.getElementById('reviewMeta').textContent=`${team?.name||s.team} · ${s.approach||'Structured solution'} · Estimated cost ${s.estimated_cost||'—'}`;
+    document.getElementById('reviewScore').textContent=s.ai_scores?.total??'—';
+    document.getElementById('reviewScoreRing').style.setProperty('--score',`${Math.min(100,Number(s.ai_scores?.total||0))}%`);
+    document.getElementById('reviewDims').innerHTML=dims.map(([key,label,max])=>`<div class="review-dim"><small>${label}</small><strong>${s.ai_scores?.[key]??'—'} / ${max}</strong></div>`).join('');
+    document.getElementById('reviewEvidence').innerHTML=`
+      <div class="evidence-box"><strong>Strengths</strong><span>${esc((s.strengths||[]).join(' · ')||'No structured strengths recorded.')}</span></div>
+      <div class="evidence-box"><strong>Known weaknesses</strong><span>${esc((s.weaknesses||[]).join(' · ')||'No structured weaknesses recorded.')}</span></div>`;
+    Object.entries(inputs).forEach(([k,el])=>{if(!el)return; if(k==='evidence'||k==='notes')el.value=r[k]||''; else el.value=String(r.criteria?.[k]||el.value)});
+    const handoff=document.getElementById('reviewHandoff');
+    if(r.decision==='Send to Pilot'){
+      handoff.classList.add('show');
+      document.getElementById('handoffText').textContent=`${s.title} is marked for pilot handoff with review saved ${r.updatedAt?new Date(r.updatedAt).toLocaleString('en-IN'):''}.`;
+    }else handoff.classList.remove('show');
+  }
+
+  function act(action){
+    const s=solutions.find(x=>x.id===selected); if(!s)return;
+    const all=state();
+    const criteria={feasibility:+inputs.feasibility.value,risk:+inputs.risk.value,domain:+inputs.domain.value,pilot:+inputs.pilot.value};
+    const map={shortlist:'Approve for Shortlist',clarify:'Request Clarification',pilot:'Send to Pilot',reject:'Reject'};
+    all[s.id]={decision:map[action],criteria,evidence:inputs.evidence.value.trim(),notes:inputs.notes.value.trim(),updatedAt:new Date().toISOString(),reviewer:(window.IX.state.user?.name||window.IX.state.user?.email||'Authenticated reviewer'),problemId:s.problem_id,solutionTitle:s.title};
+    save(all);
+    if(action==='pilot'){
+      const handoffs=JSON.parse(localStorage.getItem('ix_pilot_handoffs')||'[]').filter(x=>x.solutionId!==s.id);
+      handoffs.push({solutionId:s.id,solutionTitle:s.title,problemId:s.problem_id,createdAt:new Date().toISOString(),reviewer:all[s.id].reviewer});
+      localStorage.setItem('ix_pilot_handoffs',JSON.stringify(handoffs));
+    }
+    renderQueue(); loadSelected();
+    if(typeof showToast==='function') showToast(`${s.title}: ${map[action]} recorded.`,action==='reject'?'warning':'success',2200);
+  }
+
+  queue.addEventListener('click',e=>{const btn=e.target.closest('[data-id]');if(btn){selected=btn.dataset.id;}});
+  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>act(btn.dataset.action)));
+  renderQueue(); loadSelected();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Discover Problems — InnovateX</title>
+  <meta name="description" content="Browse 47 real-world challenges across 12 categories. Find the right problem and submit your startup solution."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+    /* ── Page-specific: Hero ─ */
+    .prob-hero {
+      background: var(--grad-hero);
+      padding: var(--sp-10) 0 var(--sp-12);
+      position: relative;
+      overflow: hidden;
+    }
+    .prob-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 80% 20%, rgba(124,58,237,0.10) 0%, transparent 50%);
+    }
+    .prob-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    .prob-hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+    /* ── Category spotlight ─ */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-6);
+    }
+    .cat-card {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      padding: var(--sp-4);
+      background: var(--ix-surface);
+      border: 1px solid var(--ix-border);
+      border-radius: var(--r-xl);
+      cursor: pointer;
+      transition: all var(--t-fast);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ix-text-2);
+    }
+    .cat-card:hover { border-color: var(--blue-300); background: var(--blue-50); color: var(--blue-700); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .cat-card.active { border-color: var(--ix-accent); background: var(--blue-50); color: var(--ix-accent); }
+    .cat-icon { font-size: 22px; flex-shrink: 0; }
+    .cat-count { font-size: 11px; color: var(--ix-muted); font-weight: 500; margin-left: auto; }
+    @media(max-width:900px){ .cat-grid { grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:600px){ .cat-grid { grid-template-columns: repeat(2,1fr); } }
+
+    /* ── Journey section ─ */
+    .journey-section {
+      background: linear-gradient(135deg, var(--blue-50) 0%, var(--violet-50) 100%);
+      border: 1px solid var(--blue-100);
+      border-radius: var(--r-3xl);
+      padding: var(--sp-8);
+      margin-bottom: var(--sp-8);
+      position: relative;
+      overflow: hidden;
+    }
+    .journey-section::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,58,237,0.08), transparent 70%);
+    }
+
+    /* ── Featured problem ─ */
+    .featured-problem {
+      background: var(--ix-surface);
+      border: 1px solid var(--ix-border);
+      border-radius: var(--r-3xl);
+      padding: var(--sp-8);
+      margin-bottom: var(--sp-6);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .featured-problem::before {
+      content: 'FEATURED';
+      position: absolute;
+      top: var(--sp-5);
+      right: var(--sp-5);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--amber-600);
+      background: var(--amber-50);
+      border: 1px solid var(--amber-100);
+      padding: 3px 10px;
+      border-radius: var(--r-full);
+    }
+    .featured-problem::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--grad-ai);
+    }
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+    .featured-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-3);
+      min-width: 200px;
+    }
+    .featured-stat {
+      background: var(--ix-surface-2);
+      border-radius: var(--r-xl);
+      padding: var(--sp-4);
+      text-align: center;
+    }
+    .featured-stat-val { font-family: var(--font-heading); font-size: var(--fs-2xl); font-weight: 900; color: var(--ix-text); }
+    .featured-stat-lbl { font-size: 11px; color: var(--ix-muted); font-weight: 600; margin-top: 2px; }
+    @media(max-width:768px){ .featured-grid { grid-template-columns: 1fr; } .featured-stats { grid-template-columns: repeat(4,1fr); } }
+
+    /* ── Layout ─ */
+    .discovery-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-5);
+    }
+    @media(max-width:900px){ .discovery-layout { grid-template-columns: 1fr; } }
+
+    /* ── Stats bar ─ */
+    .stats-strip {
+      display: flex;
+      gap: var(--sp-8);
+      padding: var(--sp-5) var(--sp-6);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--r-2xl);
+      margin-top: var(--sp-6);
+    }
+    .strip-stat-val { font-family: var(--font-heading); font-weight: 900; font-size: var(--fs-2xl); color: #fff; }
+    .strip-stat-lbl { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    @media(max-width:600px){ .stats-strip { flex-wrap: wrap; gap: var(--sp-5); } }
+  </style>
+</head>
+<body data-page="problem">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo</span>
+        <div id="authArea" class="auth-area"></div>
+        <button class="btn btn-primary btn-sm" data-roles="organization" onclick="showPostProblemModal()">+ Post a Problem</button>
+        <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">+ Submit Solution</button>
+        <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+    <!-- Hero -->
+    <div class="prob-hero">
+      <div class="container">
+        <div class="prob-hero-inner">
+          <div class="eyebrow" style="color:rgba(255,255,255,0.7);margin-bottom:var(--sp-3)">Discover Opportunities</div>
+          <h1 class="display-heading" style="color:#fff;max-width:680px;margin-bottom:var(--sp-4)">
+            Find the problem<br/>worth solving.
+          </h1>
+          <p style="color:rgba(255,255,255,0.62);font-size:var(--fs-lg);max-width:520px;margin-bottom:var(--sp-6)">
+            Explore real challenges from organisations across India. Discover where your solution creates measurable impact.
+          </p>
+          <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+            <button class="btn btn-primary" data-roles="startup" onclick="showSubmitModal()">+ Submit a Solution</button>
+            <button class="btn btn-primary" data-roles="organization" onclick="showPostProblemModal()">+ Post a Problem</button>
+          </div>
+          <div class="stats-strip">
+            <div><div class="strip-stat-val" data-counter="47" data-suffix="+">47+</div><div class="strip-stat-lbl">Open Challenges</div></div>
+            <div><div class="strip-stat-val" data-counter="312" data-suffix="+">312+</div><div class="strip-stat-lbl">Solutions Submitted</div></div>
+            <div><div class="strip-stat-val" data-counter="12">12</div><div class="strip-stat-lbl">Categories</div></div>
+            <div><div class="strip-stat-val" data-counter="78" data-suffix="%">78%</div><div class="strip-stat-lbl">Pilot Success</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)">
+
+      <!-- InnovateX Journey (REPLACES broken .workflow-bar) -->
+      <div class="journey-section">
+        <div style="margin-bottom:var(--sp-5)">
+          <div class="eyebrow">The InnovateX Journey</div>
+          <h2 style="font-size:var(--fs-xl);margin-top:6px">From challenge to verified procurement</h2>
+        </div>
+        <div class="ix-journey" id="ixJourney">
+          <div class="ix-journey-node done">
+            <div class="ix-node-circle"><span class="ix-node-icon">🏷️</span></div>
+            <div class="ix-node-label">Category</div>
+          </div>
+          <div class="ix-journey-node active">
+            <div class="ix-node-circle"><span class="ix-node-icon">📋</span></div>
+            <div class="ix-node-label">Problem</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">💡</span></div>
+            <div class="ix-node-label">Solutions</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">⚡</span></div>
+            <div class="ix-node-label">Solution Analysis</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">🏆</span></div>
+            <div class="ix-node-label">Shortlist</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">🤝</span></div>
+            <div class="ix-node-label">Collaborate</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">🚀</span></div>
+            <div class="ix-node-label">Pilot</div>
+          </div>
+          <div class="ix-journey-node">
+            <div class="ix-node-circle"><span class="ix-node-icon">✅</span></div>
+            <div class="ix-node-label">Decision</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category browse -->
+      <div style="margin-bottom:var(--sp-6)">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Browse by category</div>
+            <h2 style="font-size:var(--fs-xl);margin-top:4px">Explore challenges</h2>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="resetFilters()">View All</button>
+        </div>
+        <div class="cat-grid" id="catGrid">
+          <div class="cat-card active" onclick="filterCat('',this)" data-cat="">
+            <span class="cat-icon">🌐</span><span>All</span><span class="cat-count">47</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('agriculture',this)" data-cat="agriculture">
+            <span class="cat-icon">🌾</span><span>Agriculture</span><span class="cat-count">8</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('healthcare',this)" data-cat="healthcare">
+            <span class="cat-icon">🏥</span><span>Healthcare</span><span class="cat-count">7</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('smartcities',this)" data-cat="smartcities">
+            <span class="cat-icon">🏙️</span><span>Smart Cities</span><span class="cat-count">6</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('education',this)" data-cat="education">
+            <span class="cat-icon">🎓</span><span>Education</span><span class="cat-count">5</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('environment',this)" data-cat="environment">
+            <span class="cat-icon">🌿</span><span>Environment</span><span class="cat-count">5</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('energy',this)" data-cat="energy">
+            <span class="cat-icon">⚡</span><span>Energy</span><span class="cat-count">4</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('finance',this)" data-cat="finance">
+            <span class="cat-icon">💰</span><span>Finance</span><span class="cat-count">4</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('transport',this)" data-cat="transport">
+            <span class="cat-icon">🚗</span><span>Transport</span><span class="cat-count">3</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('government',this)" data-cat="government">
+            <span class="cat-icon">🏛️</span><span>Government</span><span class="cat-count">3</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('cybersecurity',this)" data-cat="cybersecurity">
+            <span class="cat-icon">🔒</span><span>Cybersecurity</span><span class="cat-count">3</span>
+          </div>
+          <div class="cat-card" onclick="filterCat('socialimpact',this)" data-cat="socialimpact">
+            <span class="cat-icon">🤲</span><span>Social Impact</span><span class="cat-count">3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search + Filters -->
+      <div class="filters-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" id="searchProblems" placeholder="Search challenges, technologies or keywords…"/>
+        </div>
+        <select class="filter-select" id="filterDifficulty" data-filter onchange="applyFilters()">
+          <option value="">All Difficulty</option>
+          <option value="1">Easy</option>
+          <option value="2">Medium</option>
+          <option value="3">Hard</option>
+        </select>
+        <select class="filter-select" id="filterStatus" data-filter onchange="applyFilters()">
+          <option value="">All Status</option>
+          <option value="open">Open</option>
+          <option value="pilot">In Pilot</option>
+          <option value="closed">Closed</option>
+        </select>
+        <select class="filter-select" onchange="showToast('Sorting applied','info',1000)">
+          <option>Most Solutions</option>
+          <option>Newest</option>
+          <option>Highest Price</option>
+          <option>Deadline Soonest</option>
+        </select>
+      </div>
+
+      <!-- Results count -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-5)">
+        <div style="font-size:var(--fs-sm);color:var(--ix-muted)">Showing <strong id="resultsCount" style="color:var(--ix-text)">12</strong> problems</div>
+        <div style="font-size:12px;color:var(--ix-muted)">Sorted by most solutions</div>
+      </div>
+
+      <!-- Featured problem (p001) -->
+      <div id="featuredCard" class="featured-problem anim-fade-up">
+        <div class="featured-grid">
+          <div>
+            <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-bottom:var(--sp-4)">
+              <span class="badge badge-green">🌾 Agriculture</span>
+              <span class="badge badge-amber">High Impact</span>
+              <span class="badge badge-blue">Shortlisting</span>
+              <span class="badge badge-green">Open</span>
+            </div>
+            <h2 style="font-size:var(--fs-2xl);margin-bottom:var(--sp-3)">Early Crop Disease Detection<br/>for Small Farmers</h2>
+            <div class="problem-org" style="margin-bottom:var(--sp-3)">🏛️ National Agriculture Innovation Lab · New Delhi · <span class="diff-dot diff-2"></span>Medium</div>
+            <p style="font-size:var(--fs-base);color:var(--ix-text-2);line-height:1.7;margin-bottom:var(--sp-4)">Small farmers lose 30–40% of crops annually to diseases detected too late. Build an affordable AI solution using smartphone cameras that works offline and in 10+ regional languages.</p>
+            <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-bottom:var(--sp-5)">
+              <span class="chip">AI/ML</span><span class="chip">Mobile</span><span class="chip">Offline</span><span class="chip">Agriculture</span>
+            </div>
+            <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="showProblemDetail('p001')">View Details →</button>
+              <button class="btn btn-outline" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+              <a href="ai-analysis.html" class="btn btn-ghost">View Solution Analysis</a>
+            </div>
+          </div>
+          <div class="featured-stats">
+            <div class="featured-stat">
+              <div class="featured-stat-val">7</div>
+              <div class="featured-stat-lbl">Solutions</div>
+            </div>
+            <div class="featured-stat">
+              <div class="featured-stat-val">₹20L</div>
+              <div class="featured-stat-lbl">Price</div>
+            </div>
+            <div class="featured-stat">
+              <div class="featured-stat-val">38</div>
+              <div class="featured-stat-lbl">Days Left</div>
+            </div>
+            <div class="featured-stat">
+              <div class="featured-stat-val">93</div>
+              <div class="featured-stat-lbl">Top Score</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problems Grid -->
+      <div class="discovery-layout" id="problemsGrid">
+
+        <!-- P002 Healthcare -->
+        <div class="problem-card anim-fade-up delay-1" data-category="healthcare" data-difficulty="3" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-rose">🏥 Healthcare</span>
+              <span class="badge badge-rose">Very High Impact</span>
+              <span class="badge badge-purple">Solution Analysis</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Affordable Rural Healthcare Diagnostics</div>
+          <div class="problem-org">🏛️ Apollo Health Foundation · Maharashtra · <span class="diff-dot diff-3"></span>Hard</div>
+          <div class="problem-desc">Build affordable diagnostic tools enabling ASHA workers to screen for TB, anaemia, and diabetes without specialist doctors. Must cost under ₹30 per diagnosis.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 5 solutions</span>
+            <span class="problem-meta-item">🏆 ₹25 Lakhs</span>
+            <span class="problem-meta-item">📅 52 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">IoT</span><span class="chip">Edge AI</span><span class="chip">Healthcare</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p002')">View Details</button>
+            <a href="ai-analysis.html" class="btn btn-primary btn-sm">View Analysis</a>
+          </div>
+        </div>
+
+        <!-- P003 Smart Cities -->
+        <div class="problem-card anim-fade-up delay-2" data-category="smartcities" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-indigo">🏙️ Smart Cities</span>
+              <span class="badge badge-amber">High Impact</span>
+              <span class="badge badge-teal">Collaboration</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Smart Water Management for Cities</div>
+          <div class="problem-org">🏛️ Smart City Mission India · Pune, Nashik · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Urban water wastage reaches 40% in Indian cities. Develop a real-time IoT monitoring and management system that reduces waste and improves municipal distribution.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 4 solutions</span>
+            <span class="problem-meta-item">🏆 ₹18 Lakhs</span>
+            <span class="problem-meta-item">📅 68 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">IoT</span><span class="chip">Smart Cities</span><span class="chip">Analytics</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p003')">View Details</button>
+            <a href="collaborate.html" class="btn btn-primary btn-sm">View Collaboration</a>
+          </div>
+        </div>
+
+        <!-- P004 Education -->
+        <div class="problem-card anim-fade-up delay-3" data-category="education" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-purple">🎓 Education</span>
+              <span class="badge badge-amber">High Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Personalized Learning for Rural Students</div>
+          <div class="problem-org">🏛️ Ministry of Education · Pan India · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Build an adaptive AI tutoring platform for grades 6–10 students in rural India. Must support 8 regional languages and work on budget Android devices with low bandwidth.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 6 solutions</span>
+            <span class="problem-meta-item">🏆 ₹15 Lakhs</span>
+            <span class="problem-meta-item">📅 83 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">EdTech</span><span class="chip">NLP</span><span class="chip">Adaptive AI</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p004')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P005 Environment -->
+        <div class="problem-card anim-fade-up delay-4" data-category="environment" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-teal">🌿 Environment</span>
+              <span class="badge badge-blue">Medium Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Waste Segregation and Recycling Optimization</div>
+          <div class="problem-org">🏛️ TERI Foundation · Mumbai, Delhi · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">India generates 62 million tonnes of waste annually with only 22% properly segregated. Build an AI-powered segregation system for residential communities.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 3 solutions</span>
+            <span class="problem-meta-item">🏆 ₹12 Lakhs</span>
+            <span class="problem-meta-item">📅 93 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">Computer Vision</span><span class="chip">IoT</span><span class="chip">Sustainability</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p005')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P006 Government -->
+        <div class="problem-card anim-fade-up delay-5" data-category="government" data-difficulty="3" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-purple">🏛️ Government</span>
+              <span class="badge badge-amber">High Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Secure Digital Identity for Public Services</div>
+          <div class="problem-org">🏛️ National Transport Authority · Pan India · <span class="diff-dot diff-3"></span>Hard</div>
+          <div class="problem-desc">Citizens need secure, privacy-preserving digital identities for government services without exposing sensitive data. Must comply with data protection laws.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 3 solutions</span>
+            <span class="problem-meta-item">🏆 ₹22 Lakhs</span>
+            <span class="problem-meta-item">📅 103 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">Blockchain</span><span class="chip">Identity</span><span class="chip">Privacy</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p006')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P007 Transport -->
+        <div class="problem-card anim-fade-up delay-6" data-category="transport" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-blue">🚗 Transport</span>
+              <span class="badge badge-blue">Medium Impact</span>
+              <span class="badge badge-purple">Solution Analysis</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Predictive Maintenance for Public Transport</div>
+          <div class="problem-org">🏛️ National Transport Authority · Kolkata, Chennai · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Unplanned bus breakdowns cause 35% service disruption. Build an IoT + ML predictive maintenance system identifying failure risks before they occur.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 4 solutions</span>
+            <span class="problem-meta-item">🏆 ₹14 Lakhs</span>
+            <span class="problem-meta-item">📅 33 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">IoT</span><span class="chip">Predictive ML</span><span class="chip">Transport</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p007')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P008 Finance -->
+        <div class="problem-card anim-fade-up delay-1" data-category="finance" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-amber">💰 Finance</span>
+              <span class="badge badge-rose">Very High Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Financial Inclusion for Underserved Communities</div>
+          <div class="problem-org">🏛️ Invest India · Bihar, UP, Odisha · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Over 190 million Indians remain unbanked. Build a mobile-first platform providing credit scoring, micro-loans, and savings products for those outside formal banking.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 5 solutions</span>
+            <span class="problem-meta-item">🏆 ₹20 Lakhs</span>
+            <span class="problem-meta-item">📅 88 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">FinTech</span><span class="chip">Mobile</span><span class="chip">Microfinance</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p008')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P009 Energy — Pilot -->
+        <div class="problem-card anim-fade-up delay-2" data-category="energy" data-difficulty="2" data-status="pilot">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-amber">⚡ Energy</span>
+              <span class="badge badge-amber">High Impact</span>
+              <span class="badge badge-green">🚀 In Pilot</span>
+            </div>
+            <span class="badge badge-green">Pilot Active</span>
+          </div>
+          <div class="problem-title">Energy Optimization for Industrial Facilities</div>
+          <div class="problem-org">🏛️ TERI Foundation · Gujarat, Maharashtra · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Indian SMEs waste 25–35% of energy. Build an intelligent IoT energy optimization system for small manufacturing units. EcoGrid Smart Energy is now in pilot — achieving 28% savings.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 4 solutions</span>
+            <span class="problem-meta-item">🏆 ₹16 Lakhs</span>
+            <span class="problem-meta-item">🚀 Pilot underway</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">IoT</span><span class="chip">ML</span><span class="chip">Energy</span><span class="chip">Industry</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p009')">View Details</button>
+            <a href="pilot.html" class="btn btn-primary btn-sm">View Pilot →</a>
+          </div>
+        </div>
+
+        <!-- P010 Cybersecurity -->
+        <div class="problem-card anim-fade-up delay-3" data-category="cybersecurity" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-indigo">🔒 Cybersecurity</span>
+              <span class="badge badge-blue">Medium Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Cybersecurity for Small Businesses</div>
+          <div class="problem-org">🏛️ AICTE Innovation Cell · Pan India · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">60% of SMEs suffer a cyber attack within 6 months of setup. Build affordable, plug-and-play cybersecurity tools for non-technical SME owners at ₹999/month cap.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 3 solutions</span>
+            <span class="problem-meta-item">🏆 ₹12 Lakhs</span>
+            <span class="problem-meta-item">📅 113 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">Cybersecurity</span><span class="chip">SaaS</span><span class="chip">SME</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p010')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P011 Agriculture Smart Irrigation -->
+        <div class="problem-card anim-fade-up delay-4" data-category="agriculture" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-green">🌾 Agriculture</span>
+              <span class="badge badge-amber">High Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Smart Irrigation and Soil Monitoring</div>
+          <div class="problem-org">🏛️ National Agriculture Innovation Lab · Rajasthan, Punjab · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">Irrigation uses 80% of India's freshwater, with 50% wasted. Build precision irrigation using soil sensors and weather data. Target: 35% water saving at under ₹5,000/acre.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 5 solutions</span>
+            <span class="problem-meta-item">🏆 ₹18 Lakhs</span>
+            <span class="problem-meta-item">📅 73 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">IoT</span><span class="chip">Sensors</span><span class="chip">Agriculture</span><span class="chip">Water</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p011')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+        <!-- P012 Social Impact -->
+        <div class="problem-card anim-fade-up delay-5" data-category="socialimpact" data-difficulty="2" data-status="open">
+          <div class="problem-card-header">
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-teal">🤲 Social Impact</span>
+              <span class="badge badge-amber">High Impact</span>
+            </div>
+            <span class="badge badge-green">Open</span>
+          </div>
+          <div class="problem-title">Assistive Technology for Persons with Disabilities</div>
+          <div class="problem-org">🏛️ Ministry of Education · Pan India · <span class="diff-dot diff-2"></span>Medium</div>
+          <div class="problem-desc">26 million people with disabilities in India lack accessible digital tools. Build affordable assistive technology that enables independent participation in education and employment.</div>
+          <div class="problem-meta">
+            <span class="problem-meta-item">💡 3 solutions</span>
+            <span class="problem-meta-item">🏆 ₹15 Lakhs</span>
+            <span class="problem-meta-item">📅 98 days left</span>
+          </div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">AI</span><span class="chip">Accessibility</span><span class="chip">NLP</span><span class="chip">Mobile</span></div>
+          <div class="problem-footer">
+            <button class="btn btn-outline btn-sm" onclick="showProblemDetail('p012')">View Details</button>
+            <button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button>
+          </div>
+        </div>
+
+      </div><!-- /problemsGrid -->
+
+      <!-- Empty state -->
+      <div id="emptyState" style="display:none;text-align:center;padding:var(--sp-16) 0">
+        <div style="font-size:48px;margin-bottom:var(--sp-4)">🔍</div>
+        <h3 style="margin-bottom:var(--sp-2)">No matching problems</h3>
+        <p style="color:var(--ix-muted);margin-bottom:var(--sp-5)">Try adjusting your search or filters</p>
+        <button class="btn btn-outline" onclick="resetFilters()">Clear Filters</button>
+      </div>
+
+    </div><!-- /container -->
+  </div><!-- /page-content -->
+
+  <!-- Problem Detail Modal -->
+  <div class="modal-overlay hidden" id="problemDetailModal">
+    <div class="modal" style="max-width:720px">
+      <div class="modal-header">
+        <h3 class="modal-title" id="pd-title">Problem Details</h3>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="closeProblemDetail()">✕</button>
+      </div>
+      <div id="pd-body"></div>
+    </div>
+  </div>
+
+  <!-- Submit Solution Modal -->
+  <div class="modal-overlay hidden" id="submitModal">
+    <div class="modal" style="max-width:680px">
+      <div class="modal-header">
+        <h3 class="modal-title">Submit Your Solution</h3>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="closeSubmitModal()">✕</button>
+      </div>
+      <div class="submit-steps">
+        <span class="submit-step done">✓ 1. Basic Info</span>
+        <span class="submit-step active">2. Solution</span>
+        <span class="submit-step">3. Business &amp; Impact</span>
+        <span class="submit-step">4. Evidence</span>
+        <span class="submit-step">5. Ownership</span>
+        <span class="submit-step">6. Review</span>
+      </div>
+      <form id="solutionForm" onsubmit="submitSolution(event)">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Solution Name *</label><input class="form-input" id="sol-title" placeholder="e.g., CropSense AI" required/></div>
+          <div class="form-group"><label class="form-label">Team / Startup Name *</label><input class="form-input" id="sol-team" placeholder="e.g., AgriNova" required/></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Short Tagline *</label>
+          <input class="form-input" placeholder="One-line description of your solution"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Problem Being Solved *</label>
+            <select class="form-select">
+              <option value="">Select a problem…</option>
+              <option>Early Crop Disease Detection for Small Farmers</option>
+              <option>Affordable Rural Healthcare Diagnostics</option>
+              <option>Smart Water Management for Cities</option>
+              <option>Personalized Learning for Rural Students</option>
+              <option>Waste Segregation and Recycling Optimization</option>
+              <option>Secure Digital Identity for Public Services</option>
+              <option>Predictive Maintenance for Public Transport</option>
+              <option>Financial Inclusion for Underserved Communities</option>
+              <option>Energy Optimization for Industrial Facilities</option>
+              <option>Cybersecurity for Small Businesses</option>
+              <option>Smart Irrigation and Soil Monitoring</option>
+              <option>Assistive Technology for Persons with Disabilities</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Technical Approach</label>
+            <select class="form-select">
+              <option>Edge AI + IoT</option><option>Cloud ML Pipeline</option>
+              <option>Federated Learning</option><option>Mobile-first AI</option>
+              <option>Voice AI + NLP</option><option>Wearable + Biosensors</option>
+              <option>LLM-based</option><option>Blockchain</option><option>Hybrid</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Solution Description *</label>
+          <textarea class="form-textarea" id="sol-desc" rows="4" placeholder="Describe your solution: how it works, what makes it effective, and why it's innovative." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Technology Stack</label>
+          <input class="form-input" id="techInput" placeholder="Type a technology and press Enter (e.g., TensorFlow)"/>
+          <div id="techList" class="flex flex-wrap gap-2 mt-2"></div>
+          <div class="form-hint">Add up to 8 technologies</div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Estimated Total Cost *</label>
+            <div style="position:relative"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--ix-muted)">₹</span><input class="form-input" id="estimatedCost" inputmode="decimal" placeholder="8,50,000" required style="padding-left:30px"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Cost Breakdown</label><textarea class="form-textarea" id="costBreakdown" rows="2" placeholder="Development, hardware, deployment, maintenance…"></textarea></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Demo / Prototype URL</label><input class="form-input" type="url" placeholder="https://"/></div>
+          <div class="form-group"><label class="form-label">GitHub Repository</label><input class="form-input" type="url" placeholder="https://github.com/"/></div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:flex-start;gap:var(--sp-3);cursor:pointer;font-size:var(--fs-sm);color:var(--ix-text-2)">
+            <input type="checkbox" required style="margin-top:3px;flex-shrink:0"/>
+            I confirm that I own or have permission to submit this solution, and all information is accurate.
+          </label>
+        </div>
+        <div class="flex justify-end gap-3">
+          <button type="button" class="btn btn-ghost" onclick="closeSubmitModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Solution</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Post Problem Modal (Organisation only) -->
+  <div class="modal-overlay hidden" id="postProblemModal">
+    <div class="modal" style="max-width:700px">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Post a Problem</h3>
+          <p style="font-size:12px;color:var(--ix-muted);margin-top:4px">Tell startups what challenge your organisation needs solved.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="closePostProblemModal()">✕</button>
+      </div>
+      <form id="problemForm" onsubmit="postProblem(event)">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Problem Title *</label><input class="form-input" id="problem-title" placeholder="e.g. Reduce water loss in city pipelines" required></div>
+          <div class="form-group"><label class="form-label">Category *</label><select class="form-select" id="problem-category" required><option value="">Select category…</option><option>Agriculture</option><option>Healthcare</option><option>Smart Cities</option><option>Education</option><option>Energy</option><option>Environment</option><option>Cybersecurity</option><option>Public Services</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-label">What needs to be solved? *</label><textarea class="form-textarea" id="problem-desc" rows="4" placeholder="Describe the real-world problem, who is affected, and what outcome you need." required></textarea></div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Expected Outcome</label><input class="form-input" id="problem-outcome" placeholder="e.g. Reduce losses by 20%"></div>
+          <div class="form-group"><label class="form-label">Target Date</label><input class="form-input" id="problem-deadline" type="date"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Budget / Prize</label><input class="form-input" id="problem-budget" placeholder="e.g. ₹10,00,000"></div>
+        <div class="flex justify-end gap-3">
+          <button type="button" class="btn btn-ghost" onclick="closePostProblemModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="postProblemBtn">Post Problem</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ── Category filter chips ──
+    function filterCat(cat, el) {
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const featured = document.getElementById('featuredCard');
+      const grid     = document.getElementById('problemsGrid');
+      const cards    = grid.querySelectorAll('.problem-card');
+      let visible = 0;
+      cards.forEach(card => {
+        const show = !cat || card.dataset.category === cat;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      // Show/hide featured (always agriculture)
+      if (featured) featured.style.display = (!cat || cat === 'agriculture') ? '' : 'none';
+      const rc = document.getElementById('resultsCount');
+      if (rc) rc.textContent = visible + (!cat || cat === 'agriculture' ? ' + featured' : '');
+      document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    function resetFilters() {
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-cat=""]')?.classList.add('active');
+      document.querySelectorAll('.problem-card').forEach(c => c.style.display = '');
+      document.getElementById('featuredCard').style.display = '';
+      document.getElementById('searchProblems').value = '';
+      document.getElementById('filterDifficulty').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('resultsCount').textContent = '12 + featured';
+    }
+
+    function showPostProblemModal() {
+      if (typeof requireRole==='function' && !requireRole(['organization'],'Only Organisation accounts can post problems.')) return;
+      document.getElementById('postProblemModal')?.classList.remove('hidden');
+    }
+    function closePostProblemModal() { document.getElementById('postProblemModal')?.classList.add('hidden'); }
+    function postProblem(e) {
+      e.preventDefault();
+      if (typeof requireRole==='function' && !requireRole(['organization'],'Only Organisation accounts can post problems.')) return;
+      const user = typeof ixCurrentUser==='function' ? ixCurrentUser() : null;
+      const problem = {
+        id: 'user-problem-' + Date.now(),
+        title: document.getElementById('problem-title').value.trim(),
+        category: document.getElementById('problem-category').value,
+        desc: document.getElementById('problem-desc').value.trim(),
+        expected_outcome: document.getElementById('problem-outcome').value.trim(),
+        deadline: document.getElementById('problem-deadline').value,
+        prize: document.getElementById('problem-budget').value.trim(),
+        org: user?.name || 'Organisation',
+        orgId: user?.id || user?.email || '',
+        status: 'open',
+        createdAt: new Date().toISOString(),
+        solutions_count: 0,
+        tags: []
+      };
+      const existing = JSON.parse(localStorage.getItem('ix_user_problems') || '[]');
+      existing.unshift(problem);
+      localStorage.setItem('ix_user_problems', JSON.stringify(existing));
+      closePostProblemModal();
+      document.getElementById('problemForm')?.reset();
+      showToast('Problem posted successfully. Startups can now discover it.', 'success', 4500);
+    }
+
+    function showSubmitModal()  { if (typeof requireRole==='function' && !requireRole(['startup'],'Only Startup / Solution Provider accounts can submit solutions.')) return; document.getElementById('submitModal').classList.remove('hidden'); }
+    function closeSubmitModal() { document.getElementById('submitModal').classList.add('hidden'); }
+    function closeProblemDetail() { document.getElementById('problemDetailModal').classList.add('hidden'); }
+
+    function submitSolution(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = '⏳ Submitting…'; btn.disabled = true;
+      setTimeout(() => {
+        closeSubmitModal();
+        showToast('Solution submitted! AI analysis will begin within 24 hours.', 'success', 5000);
+        btn.textContent = '🚀 Submit Solution'; btn.disabled = false;
+      }, 1500);
+    }
+
+    function getProblemForDisplay(id) {
+      const local = JSON.parse(localStorage.getItem('ix_user_problems') || '[]');
+      return local.find(x => x.id === id) || IX.getProblem(id);
+    }
+
+    function showProblemDetail(id) {
+      const p = getProblemForDisplay(id); if (!p) return;
+      p.location = p.location || 'Organisation posted';
+      p.why_matters = p.why_matters || p.expected_outcome || 'This organisation-defined challenge is now available for solution discovery.';
+      p.constraints = p.constraints || 'See the problem description and expected outcome for the organisation-defined requirements.';
+      p.tags = Array.isArray(p.tags) ? p.tags : [];
+      p.prize = p.prize || 'Not specified';
+      p.deadline = p.deadline || '';
+      p.solutions_count = Number(p.solutions_count || 0);
+      document.getElementById('pd-title').textContent = p.title;
+      document.getElementById('pd-body').innerHTML = `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <span class="badge badge-green">${p.category}</span>
+          <span class="badge badge-amber">${p.impact === 'very_high' ? 'Very High Impact' : 'High Impact'}</span>
+          <span class="badge badge-green">${p.status === 'open' ? 'Open' : 'In Pilot'}</span>
+          <span class="badge badge-blue">₹ ${p.prize}</span>
+        </div>
+        <div style="font-size:14px;color:var(--ix-muted);margin-bottom:8px"><strong>Organisation:</strong> ${p.org} · ${p.location}</div>
+        <div style="font-size:14px;color:var(--ix-muted);margin-bottom:16px"><strong>Deadline:</strong> ${IX.formatDate(p.deadline)} · ${IX.daysLeft(p.deadline)} days left</div>
+        <h4 style="font-weight:700;margin-bottom:8px">Problem Description</h4>
+        <p style="font-size:14px;color:var(--ix-text-2);margin-bottom:16px;line-height:1.7">${p.desc}</p>
+        <h4 style="font-weight:700;margin-bottom:8px">Why It Matters</h4>
+        <p style="font-size:14px;color:var(--ix-text-2);margin-bottom:16px;line-height:1.7">${p.why_matters}</p>
+        <h4 style="font-weight:700;margin-bottom:8px">Constraints</h4>
+        <p style="font-size:14px;color:var(--ix-text-2);margin-bottom:16px;line-height:1.7">${p.constraints}</p>
+        <h4 style="font-weight:700;margin-bottom:8px">Expected Outcome</h4>
+        <p style="font-size:14px;color:var(--ix-text-2);margin-bottom:20px;line-height:1.7">${p.expected_outcome}</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+          <span class="badge badge-green">💡 ${p.solutions_count} solutions submitted</span>
+          ${p.tags.map(t=>`<span class="chip">${t}</span>`).join('')}
+        </div>
+        <div style="display:flex;gap:12px">
+          <button class="btn btn-primary" data-roles="startup" onclick="closeProblemDetail();showSubmitModal()">Submit Solution</button>
+          <button class="btn btn-ghost" onclick="closeProblemDetail()">Close</button>
+        </div>`;
+      document.getElementById('problemDetailModal').classList.remove('hidden');
+    }
+
+    function renderUserProblems() {
+      const grid = document.getElementById('problemsGrid');
+      if (!grid) return;
+      const problems = JSON.parse(localStorage.getItem('ix_user_problems') || '[]');
+      if (!problems.length) return;
+      const frag = document.createDocumentFragment();
+      problems.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'problem-card anim-fade-up';
+        card.dataset.category = String(p.category || '').toLowerCase().replace(/\s+/g,'');
+        card.dataset.difficulty = '2';
+        card.dataset.status = p.status || 'open';
+        const deadline = p.deadline ? `📅 ${p.deadline}` : '📅 Date to be confirmed';
+        const category = p.category || 'General';
+        card.innerHTML = `
+          <div class="problem-card-header"><div class="flex gap-2 flex-wrap"><span class="badge badge-blue">📌 ${escapeHtml(category)}</span><span class="badge badge-teal">Organisation Posted</span></div><span class="badge badge-green">Open</span></div>
+          <div class="problem-title">${escapeHtml(p.title)}</div>
+          <div class="problem-org">🏛️ ${escapeHtml(p.org || 'Organisation')} · <span class="diff-dot diff-2"></span>New challenge</div>
+          <div class="problem-desc">${escapeHtml(p.desc)}</div>
+          <div class="problem-meta"><span class="problem-meta-item">💡 ${Number(p.solutions_count || 0)} solutions</span><span class="problem-meta-item">🎯 ${escapeHtml(p.expected_outcome || 'Outcome defined by organisation')}</span><span class="problem-meta-item">${deadline}</span></div>
+          <div class="flex gap-2 flex-wrap my-3"><span class="chip">New</span><span class="chip">Organisation Challenge</span></div>
+          <div class="problem-footer"><button class="btn btn-outline btn-sm" onclick="showProblemDetail('${escapeHtml(p.id)}')">View Details</button><button class="btn btn-primary btn-sm" data-roles="startup" onclick="showSubmitModal()">Submit Solution</button></div>`;
+        frag.appendChild(card);
+      });
+      grid.prepend(frag);
+      if (typeof applyRoleVisibility === 'function') applyRoleVisibility();
+      if (typeof initReveal === 'function') initReveal();
+    }
+
+    // Allow organisation dashboard CTA to open the post form directly.
+    if (new URLSearchParams(window.location.search).get('post') === '1') {
+      setTimeout(showPostProblemModal, 250);
+    }
+
+    // Render organisation-posted challenges from the shared localStorage store.
+    renderUserProblems();
+
+    // Nav mobile
+    document.getElementById('navHamburger')?.addEventListener('click', () => {
+      const nl = document.getElementById('navLinks');
+      const hb = document.getElementById('navHamburger');
+      nl.classList.toggle('mobile-open');
+      hb.classList.toggle('open');
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav')?.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // Scroll reveal
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.anim-fade-up').forEach(el => revealObs.observe(el));
+
+    // Results count
+    const obs = new MutationObserver(() => {
+      const visible = [...document.querySelectorAll('#problemsGrid .problem-card')].filter(c => c.style.display !== 'none').length;
+      const rc = document.getElementById('resultsCount');
+      if (rc) rc.textContent = visible;
+    });
+    obs.observe(document.getElementById('problemsGrid'), { attributes:true, subtree:true, attributeFilter:['style'] });
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>

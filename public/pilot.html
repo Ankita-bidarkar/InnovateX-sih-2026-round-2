@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Pilot Tracker — InnovateX</title>
+  <meta name="description" content="InnovateX Pilot Tracker: monitor live KPIs, milestones, and performance charts for shortlisted solutions in active pilots."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .pilot-selector { display:flex; gap:var(--sp-3); margin-bottom:var(--sp-8); flex-wrap:wrap; }
+    .pilot-tab { background:var(--bg-card); border:2px solid var(--border); border-radius:var(--r-xl); padding:var(--sp-4) var(--sp-5); cursor:pointer; transition:all var(--t-fast); min-width:240px; flex:1; max-width:340px; }
+    .pilot-tab.active { border-color:var(--blue-500); background:var(--blue-50); }
+    .pilot-tab:hover:not(.active) { border-color:var(--blue-300); }
+    .pilot-name { font-weight:700; font-size:var(--fs-sm); color:var(--text-primary); margin-bottom:4px; }
+    .pilot-sub  { font-size:var(--fs-xs); color:var(--text-muted); }
+    .kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-4); margin-bottom:var(--sp-8); }
+    .kpi-single { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:var(--sp-5); box-shadow:var(--shadow-card); }
+    .kpi-single.exceeded { border-color:var(--green-200); background:var(--green-50); }
+    .kpi-single.on-track { border-color:var(--blue-200); background:var(--blue-50); }
+    .kpi-single.behind   { border-color:var(--rose-200);  background:var(--rose-50); }
+    .kpi-s-label  { font-size:var(--fs-xs);font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2); }
+    .kpi-s-actual { font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--text-primary);line-height:1; }
+    .kpi-s-target { font-size:var(--fs-xs);color:var(--text-muted);margin-top:4px; }
+    .kpi-s-badge  { margin-top:6px; }
+    .milestone-timeline { display:flex;flex-direction:column;gap:0;position:relative; }
+    .ml-item { display:flex; gap:var(--sp-4); padding-bottom:var(--sp-5); position:relative; }
+    .ml-item::before { content:''; position:absolute; left:19px; top:40px; bottom:0; width:2px; background:var(--border); }
+    .ml-item:last-child::before { display:none; }
+    .ml-dot { width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:2px solid var(--border);background:#fff;position:relative;z-index:1; }
+    .ml-dot.done    { background:var(--green-500);border-color:var(--green-500); }
+    .ml-dot.active  { background:var(--blue-600);border-color:var(--blue-600); }
+    .ml-dot.pending { background:#fff;border-color:var(--border); }
+    .ml-date  { font-size:var(--fs-xs);color:var(--text-muted);font-weight:500;margin-bottom:2px; }
+    .ml-title { font-weight:700;color:var(--text-primary);font-size:var(--fs-sm);margin-bottom:4px; }
+    .ml-desc  { font-size:var(--fs-xs);color:var(--text-secondary);line-height:1.6; }
+    .decision-box { padding:var(--sp-6); border-radius:var(--r-xl); text-align:center; border:2px solid var(--green-200); background:var(--green-50); }
+    .decision-box.pending { border-color:var(--amber-200); background:var(--amber-50); }
+    @media(max-width:900px){ .kpi-row{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:600px){ .kpi-row{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body data-page="pilot">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo</span>
+        <div id="authArea" class="auth-area"></div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Export report generated!','success')">📥 Export Report</button></div>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)">
+
+      <!-- Page Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-6);margin-bottom:var(--sp-6);flex-wrap:wrap">
+        <div>
+          <h1 style="font-size:var(--fs-2xl);margin-bottom:var(--sp-2)">🚀 Pilot Tracker</h1>
+          <p>Monitor live performance, milestones, and KPIs for all active pilots in real-time.</p>
+        </div>
+        <div class="flex gap-3 flex-wrap">
+          <div class="stat-card" style="padding:var(--sp-3) var(--sp-5);display:flex;align-items:center;gap:var(--sp-3);min-width:0">
+            <div class="stat-icon green" style="width:36px;height:36px;margin:0;font-size:16px">🚀</div>
+            <div><div class="stat-label" style="margin:0">Active Pilots</div><div class="stat-value" style="font-size:var(--fs-xl)">2</div></div>
+          </div>
+          <div class="stat-card" style="padding:var(--sp-3) var(--sp-5);display:flex;align-items:center;gap:var(--sp-3);min-width:0">
+            <div class="stat-icon green" style="width:36px;height:36px;margin:0;font-size:16px">✅</div>
+            <div><div class="stat-label" style="margin:0">All KPIs</div><div style="font-size:var(--fs-xs);font-weight:700;color:var(--green-600)">Exceeding Targets</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow Bar -->
+            <!-- InnovateX Journey -->
+      <div class="ix-journey" style="margin-bottom:var(--sp-8)">
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#127991;</span></div><div class="ix-node-label">Category</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128203;</span></div><div class="ix-node-label">Problem</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128161;</span></div><div class="ix-node-label">Solutions</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#9889;</span></div><div class="ix-node-label">Solution Analysis</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#127942;</span></div><div class="ix-node-label">Shortlist</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#129309;</span></div><div class="ix-node-label">Collaborate</div></div>
+        <div class="ix-journey-node active"><div class="ix-node-circle"><span class="ix-node-icon">&#128640;</span></div><div class="ix-node-label">Pilot</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#9989;</span></div><div class="ix-node-label">Decision</div></div>
+      </div>
+
+      <!-- Pilot Selector -->
+      <div class="pilot-selector">
+        <div class="pilot-tab active" onclick="selectPilot('pilot1', this)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+            <div class="pilot-name">⚡ EcoGrid Smart Energy</div>
+            <span class="badge badge-green">65% done</span>
+          </div>
+          <div class="pilot-sub">TERI Foundation · Surat Industrial Estate · Energy</div>
+          <div style="margin-top:var(--sp-2)"><div class="progress progress-sm"><div class="progress-fill green" style="width:65%"></div></div></div>
+        </div>
+        <div class="pilot-tab" onclick="selectPilot('pilot2', this)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+            <div class="pilot-name">🏥 SepsisMesh Intelligence</div>
+            <span class="badge badge-blue">55% done</span>
+          </div>
+          <div class="pilot-sub">Apollo Foundation · RG District Hospital, Pune · Healthcare</div>
+          <div style="margin-top:var(--sp-2)"><div class="progress progress-sm"><div class="progress-fill" style="width:55%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ====== PILOT 1: EcoGrid ====== -->
+      <div id="pilot-pilot1">
+        <!-- Header -->
+        <div class="card mb-6" style="border-color:var(--green-200)">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:var(--sp-6);align-items:center;flex-wrap:wrap">
+            <div>
+              <div class="flex gap-2 mb-2 flex-wrap">
+                <span class="badge badge-green">🟢 Active Pilot</span>
+                <span class="badge badge-amber">⚡ Energy</span>
+                <span class="badge badge-amber">📍 Active Optimization Phase</span>
+                <select id="pilotStatus1" class="pilot-status-select" aria-label="Pilot 1 status" onchange="updatePilotStatus('pilot1', this.value, this)">
+                  <option value="not_started">Not Started</option><option value="planned">Planned</option><option value="in_progress" selected>In Progress</option><option value="completed">Completed</option><option value="failed">Failed</option><option value="paused">Paused</option>
+                </select>
+              </div>
+              <h2 style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--sp-1)">EcoGrid Smart Energy</h2>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted)">by EcoGrid · TERI Foundation · Surat Industrial Estate, Gujarat</div>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:4px">🗓️ Jul 01, 2026 → Oct 31, 2026 · AI Eval Score: 89/100</div>
+              <div id="pilot1Meta" class="pilot-meta-grid">
+                <span><strong>Objective:</strong> Validate ≥20% industrial energy reduction.</span>
+                <span><strong>Scope:</strong> 3 factory units · 45 machines.</span>
+                <span><strong>Team:</strong> 6 members.</span>
+                <span><strong>Estimated Cost:</strong> ₹9,80,000.</span>
+              </div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-family:var(--font-heading);font-size:3.5rem;font-weight:800;color:var(--green-600);line-height:1">88</div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted)">Pilot Performance Score</div>
+            </div>
+          </div>
+          <div style="margin-top:var(--sp-5)">
+            <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-2)"><span>Overall Pilot Progress</span><span>65% Complete</span></div>
+            <div class="progress progress-lg"><div class="progress-fill green" style="width:65%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--text-muted);margin-top:4px"><span>Jul 01</span><span>Current: Oct 20 →</span><span>Oct 31 ✓</span></div>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:var(--sp-4)">📊 Live KPI Dashboard</div>
+        <div class="kpi-row mb-8">
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Energy Reduction</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">28%</div>
+            <div class="kpi-s-target">Target: 20%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 Exceeded by 40%</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Monthly Cost Savings</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">₹3.1L</div>
+            <div class="kpi-s-target">Target: ₹2.4L</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">✅ Exceeded</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">System Uptime</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">99.7%</div>
+            <div class="kpi-s-target">Target: 99%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">✅ Exceeded</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">ROI Payback Period</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">8 mo</div>
+            <div class="kpi-s-target">Target: 12 months</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 4 Months Faster</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">CO₂ Reduction</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">22%</div>
+            <div class="kpi-s-target">Target: 15%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">✅ Exceeded</span></div>
+          </div>
+          <div class="kpi-single on-track">
+            <div class="kpi-s-label">Operator Adoption</div>
+            <div class="kpi-s-actual" style="color:var(--blue-600)">74%</div>
+            <div class="kpi-s-target">Target: 80%</div>
+            <div class="kpi-s-badge"><span class="badge badge-blue">🔵 On Track (+2%/wk)</span></div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-8">
+          <!-- Performance Chart -->
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">📈 Weekly Performance Trends</div>
+            <div style="height:240px;position:relative"><canvas id="pilotChart"></canvas></div>
+          </div>
+          <!-- Milestones -->
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">🗓️ Milestones</div>
+            <div class="milestone-timeline">
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Jul 10, 2026</div><div class="ml-title">🔧 Sensor Installation</div><div class="ml-desc">IoT sensors installed across 45 machines in 3 factory units. Zero disruption to production.</div></div></div>
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Jul 25, 2026</div><div class="ml-title">📡 Data Pipeline Validation</div><div class="ml-desc">Real-time data flow validated at 500ms polling interval. Grafana dashboard live.</div></div></div>
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Aug 10, 2026</div><div class="ml-title">📊 Baseline Measurement</div><div class="ml-desc">Pre-optimization energy baseline established across all 3 factory units.</div></div></div>
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Aug 25, 2026</div><div class="ml-title">🤖 AI Model Deployed</div><div class="ml-desc">RL optimization model deployed in advisory mode. 12% energy reduction achieved immediately.</div></div></div>
+              <div class="ml-item"><div class="ml-dot active">→</div><div><div class="ml-date">Sep 15, 2026 — Active</div><div class="ml-title">⚡ Active Optimization Phase</div><div class="ml-desc">Automated adjustments running. 28% energy reduction achieved. Monitoring for 8 weeks.</div></div></div>
+              <div class="ml-item"><div class="ml-dot pending">○</div><div><div class="ml-date">Oct 20, 2026</div><div class="ml-title">✅ Final Evaluation</div><div class="ml-desc">Full KPI review and scale decision by TERI Foundation Review Board.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Findings and Decision -->
+        <div class="grid-2 mb-6">
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-4)">📝 Pilot Findings</div>
+            <div style="margin-bottom:var(--sp-4)">
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--green-700);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">✅ What Worked</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">Real-time monitoring dramatically reduced peak load inefficiencies. Factory managers adopted the Grafana dashboard quickly and proactively adjusted schedules based on AI recommendations. Energy savings compounded week-over-week as the RL model improved.</p>
+            </div>
+            <div style="margin-bottom:var(--sp-4)">
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--amber-600);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">⚠️ Challenges</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">Initial sensor calibration took 5 extra days for 8 machines with non-standard wiring. Voice alerts via PA system were less used than expected — operators preferred the dashboard.</p>
+            </div>
+            <div>
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">💡 Recommendation</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">Scale to 200 factories across Gujarat and Maharashtra. Add predictive maintenance module (estimated additional 8% cost reduction). Integrate with national energy efficiency program.</p>
+            </div>
+          </div>
+          <div>
+            <div class="decision-box pending mb-4">
+              <div style="font-size:32px;margin-bottom:var(--sp-3)">⏳</div>
+              <div style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--amber-700);margin-bottom:var(--sp-2)">Decision Pending</div>
+              <div style="font-size:var(--fs-sm);color:var(--amber-700);margin-bottom:var(--sp-3)">Scale · Continue · Iterate · Terminate</div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-4)">Expected: Oct 20, 2026 · TERI Foundation Review Board</div>
+              <div style="background:var(--green-50);border:1px solid var(--green-100);padding:var(--sp-3);border-radius:var(--r-md);font-size:var(--fs-xs);color:var(--green-800);text-align:left;margin-bottom:var(--sp-4)">
+                <strong>AI Prediction:</strong> 95% probability of "Scale" decision based on current KPI trajectory — all 5 measurable targets exceeded by ≥25%.
+              </div>
+              <div class="flex gap-3 justify-center flex-wrap">
+                <button class="btn btn-success btn-sm" data-roles="organization,admin" onclick="showToast('Scale decision submitted!','success')">✅ Approve Scale</button>
+                <button class="btn btn-outline btn-sm" data-roles="organization,admin" onclick="showToast('Decision deferred','info')">Defer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== PILOT 2: SepsisMesh ====== -->
+      <div id="pilot-pilot2" style="display:none">
+        <!-- Header -->
+        <div class="card mb-6" style="border-color:var(--rose-200)">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:var(--sp-6);align-items:center;flex-wrap:wrap">
+            <div>
+              <div class="flex gap-2 mb-2 flex-wrap">
+                <span class="badge badge-green">🟢 Active Pilot</span>
+                <span class="badge badge-rose">🏥 Healthcare</span>
+                <span class="badge badge-blue">📍 Clinical Trial Phase 1</span>
+                <select id="pilotStatus2" class="pilot-status-select" aria-label="Pilot 2 status" onchange="updatePilotStatus('pilot2', this.value, this)">
+                  <option value="not_started">Not Started</option><option value="planned">Planned</option><option value="in_progress" selected>In Progress</option><option value="completed">Completed</option><option value="failed">Failed</option><option value="paused">Paused</option>
+                </select>
+              </div>
+              <h2 style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;margin-bottom:var(--sp-1)">SepsisMesh Intelligence</h2>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted)">by SepsisSense + BioWatch (Evolved) · Apollo Foundation · Rajiv Gandhi District Hospital, Pune</div>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted);margin-top:4px">🗓️ Aug 01, 2026 → Oct 31, 2026 · AI Eval Score: 92/100</div>
+              <div id="pilot2Meta" class="pilot-meta-grid">
+                <span><strong>Objective:</strong> Clinically validate early sepsis detection.</span>
+                <span><strong>Scope:</strong> 3 ICU wards · 30–100 patients.</span>
+                <span><strong>Team:</strong> 8 members.</span>
+                <span><strong>Estimated Cost:</strong> ₹28,50,000.</span>
+              </div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-family:var(--font-heading);font-size:3.5rem;font-weight:800;color:var(--blue-600);line-height:1">91</div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted)">Pilot Performance Score</div>
+            </div>
+          </div>
+          <div style="margin-top:var(--sp-5)">
+            <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-2)"><span>Overall Pilot Progress</span><span>55% Complete</span></div>
+            <div class="progress progress-lg"><div class="progress-fill" style="width:55%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--text-muted);margin-top:4px"><span>Aug 01</span><span>Current →</span><span>Oct 31 ✓</span></div>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:var(--sp-4)">📊 Clinical KPI Dashboard</div>
+        <div class="kpi-row mb-8">
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Early Detection Rate</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">91%</div>
+            <div class="kpi-s-target">Target: 85%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 +6pts Exceeded</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">False Positive Rate</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">6%</div>
+            <div class="kpi-s-target">Target: &lt;15%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 Excellent</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Alert Lead Time</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">7.2h</div>
+            <div class="kpi-s-target">Target: 4 hours</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 +3.2h Exceeded</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Nurse Adoption</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">84%</div>
+            <div class="kpi-s-target">Target: 70%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">✅ Exceeded</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Mortality Reduction</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">-31%</div>
+            <div class="kpi-s-target">Target: -20%</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 Significant</span></div>
+          </div>
+          <div class="kpi-single exceeded">
+            <div class="kpi-s-label">Cost per Alert</div>
+            <div class="kpi-s-actual" style="color:var(--green-600)">₹12</div>
+            <div class="kpi-s-target">Target: ₹50</div>
+            <div class="kpi-s-badge"><span class="badge badge-green">🏆 76% Cheaper</span></div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-8">
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">📈 Clinical Trial Weekly Progress</div>
+            <div style="height:240px;position:relative"><canvas id="pilotChart2"></canvas></div>
+          </div>
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">🗓️ Milestones</div>
+            <div class="milestone-timeline">
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Aug 05, 2026</div><div class="ml-title">🔧 Infrastructure Setup</div><div class="ml-desc">Edge nodes and wearable sensor mesh installed in 3 ICU wards covering 24 beds.</div></div></div>
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Aug 20, 2026</div><div class="ml-title">📡 Data Pipeline Testing</div><div class="ml-desc">Real-time data ingestion and federated sync validated with 99.9% uptime.</div></div></div>
+              <div class="ml-item"><div class="ml-dot done">✓</div><div><div class="ml-date">Sep 01, 2026</div><div class="ml-title">🧬 Model Calibration</div><div class="ml-desc">AI model calibrated to local patient population. Achieved 91% detection accuracy.</div></div></div>
+              <div class="ml-item"><div class="ml-dot active">→</div><div><div class="ml-date">Sep 15, 2026 — Active</div><div class="ml-title">🏥 Clinical Trial Phase 1</div><div class="ml-desc">Live monitoring of 30 ICU patients by nursing staff. 84% nurse adoption rate.</div></div></div>
+              <div class="ml-item"><div class="ml-dot pending">○</div><div><div class="ml-date">Oct 01, 2026</div><div class="ml-title">📊 Clinical Trial Phase 2</div><div class="ml-desc">Expand to 100 patients, measure full outcome delta vs control group.</div></div></div>
+              <div class="ml-item"><div class="ml-dot pending">○</div><div><div class="ml-date">Oct 25, 2026</div><div class="ml-title">✅ Final Evaluation</div><div class="ml-desc">Full KPI review and scale decision by Apollo Foundation Review Board.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decision Box -->
+        <div class="grid-2 mb-6">
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-4)">📝 Clinical Findings</div>
+            <div style="margin-bottom:var(--sp-4)">
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--green-700);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">✅ What Worked</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">Edge inference dramatically reduces alert latency to under 2 seconds. Nurses adopted the alert system quickly with minimal training (avg 2.5 hours). Federated learning improved model accuracy by 3.2% across all 3 wards without sharing patient data.</p>
+            </div>
+            <div style="margin-bottom:var(--sp-4)">
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--amber-600);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">⚠️ Challenges</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">Wearable patch adhesion issues in 4 high-perspiration patients required redesigned backing. The alert escalation path needed hospital IT policy adjustment.</p>
+            </div>
+            <div>
+              <div style="font-size:var(--fs-xs);font-weight:700;color:var(--blue-700);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--sp-2)">💡 Recommendation</div>
+              <p style="font-size:var(--fs-sm);color:var(--text-secondary)">State-wide rollout to 200 rural hospitals across Maharashtra, UP, and Bihar. Partner with 3 state governments. Target: 2 million ICU patient-days per year monitored.</p>
+            </div>
+          </div>
+          <div class="decision-box">
+            <div style="font-size:32px;margin-bottom:var(--sp-3)">⭐</div>
+            <div style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--green-800);margin-bottom:var(--sp-2)">Recommended for Scale</div>
+            <div style="font-size:var(--fs-sm);color:var(--green-700);margin-bottom:var(--sp-3)">Approve for State-Wide Rollout</div>
+            <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-4)">Pending: Oct 25, 2026 · Apollo Foundation Review Board</div>
+            <div style="background:var(--blue-50);border:1px solid var(--blue-100);padding:var(--sp-3);border-radius:var(--r-md);font-size:var(--fs-xs);color:var(--blue-800);text-align:left;margin-bottom:var(--sp-4)">
+              <strong>AI Prediction:</strong> 98% probability of "Scale" decision. All 6 clinical KPIs exceeded targets by ≥10%. Mortality reduction (31%) is medically significant.
+            </div>
+            <div style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:var(--sp-4)">Reviewed by: Dr. Sunita Mehta, Apollo Health Foundation · Chief Medical Officer</div>
+            <div class="flex gap-3 justify-center flex-wrap">
+              <button class="btn btn-success btn-sm" data-roles="organization,admin" onclick="showToast('Scale approved! Rollout scheduled for Nov 2026.','success',5000)">✅ Approve Scale</button>
+              <button class="btn btn-outline btn-sm" data-roles="organization,admin" onclick="showToast('Sent for peer review','info')">📋 Peer Review</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pilot-final-recommendation" id="pilotRecommendation">
+        <div>
+          <div style="font-weight:800;font-size:var(--fs-lg);margin-bottom:4px">🎯 Pilot Recommendation</div>
+          <div style="font-size:var(--fs-xs);color:var(--text-muted)">Choose the next step after reviewing the pilot results.</div>
+        </div>
+        <div class="recommend-actions">
+          <button class="recommend-btn proceed" data-roles="organization,admin" data-verdict="Proceed to Procurement">✅ Proceed to Procurement</button>
+          <button class="recommend-btn improve" data-roles="organization,admin" data-verdict="Needs Improvement">🔁 Needs Improvement</button>
+          <button class="recommend-btn retest" data-roles="organization,admin" data-verdict="Retest">🔄 Retest</button>
+          <button class="recommend-btn reject" data-roles="organization,admin" data-verdict="Reject">❌ Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function updatePilotStatus(id, value, select) {
+      const labels = { not_started:'Not Started', planned:'Planned', in_progress:'In Progress', completed:'Completed', failed:'Failed', paused:'Paused' };
+      const label = labels[value] || value;
+      if (typeof requireRole === 'function' && !requireRole(['organization','admin'], 'Only Problem Owner / Organization accounts can update pilot status.')) return;
+      select.title = label;
+      select.dataset.status = value;
+      showToast(`${id === 'pilot1' ? 'EcoGrid' : 'SepsisMesh'} pilot status: ${label}`, 'info', 2200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const u = typeof ixCurrentUser === 'function' ? ixCurrentUser() : null;
+      if (u?.role === 'startup') document.querySelectorAll('.pilot-status-select').forEach(s => s.disabled = true);
+    });
+
+    let activePilot = 'pilot1';
+    function selectPilot(id, btn) {
+      activePilot = id;
+      document.getElementById('pilot-pilot1').style.display = id === 'pilot1' ? '' : 'none';
+      document.getElementById('pilot-pilot2').style.display = id === 'pilot2' ? '' : 'none';
+      document.querySelectorAll('.pilot-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      if (id === 'pilot1') setTimeout(initPilotChart1, 200);
+      else setTimeout(initPilotChart2, 200);
+    }
+
+    function initPilotChart1() {
+      const canvas = document.getElementById('pilotChart');
+      if (!canvas || !window.Chart) return;
+      if (canvas._chart) canvas._chart.destroy();
+      canvas._chart = new Chart(canvas, {
+        type:'line',
+        data:{
+          labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10'],
+          datasets:[
+            {label:'Energy Reduction %',data:[8,12,16,19,22,24,26,27,28,28],borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,0.06)',tension:0.4,fill:true,pointBackgroundColor:'#16A34A',borderWidth:2},
+            {label:'Operator Adoption %',data:[30,42,52,58,63,67,70,72,74,74],borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,0.04)',tension:0.4,fill:true,pointBackgroundColor:'#2563EB',borderWidth:2},
+          ],
+        },
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}},
+      });
+    }
+
+    function initPilotChart2() {
+      const canvas = document.getElementById('pilotChart2');
+      if (!canvas || !window.Chart) return;
+      if (canvas._chart) canvas._chart.destroy();
+      canvas._chart = new Chart(canvas, {
+        type:'line',
+        data:{
+          labels:['W1','W2','W3','W4','W5','W6'],
+          datasets:[
+            {label:'Detection %',  data:[72,78,82,86,89,91],borderColor:'#2563EB',backgroundColor:'rgba(37,99,235,0.05)',tension:0.4,fill:true,pointBackgroundColor:'#2563EB',borderWidth:2},
+            {label:'Adoption %',   data:[45,58,65,72,78,84],borderColor:'#16A34A',backgroundColor:'rgba(22,163,74,0.05)',tension:0.4,fill:true,pointBackgroundColor:'#16A34A',borderWidth:2},
+            {label:'False Pos %',  data:[18,15,12,9,7,6],borderColor:'#E11D48',backgroundColor:'rgba(225,29,72,0.03)',tension:0.4,fill:true,pointBackgroundColor:'#E11D48',borderWidth:2,borderDash:[4,3]},
+          ],
+        },
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}},scales:{y:{grid:{color:'#F1F5F9'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}},
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initPilotChart1, 400));
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>
+
+
+
+
+

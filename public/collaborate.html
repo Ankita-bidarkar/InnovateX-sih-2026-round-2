@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Collaboration & Solution Evolution — InnovateX</title>
+  <meta name="description" content="InnovateX AI detects complementary solutions and enables teams to co-design evolved solutions with full attribution preserved."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  
+  <style>
+    .match-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-xl); padding:var(--sp-6); box-shadow:var(--shadow-card); margin-bottom:var(--sp-5); }
+    .match-card.active { border-color:var(--green-200); border-left:4px solid var(--green-500); }
+    .match-card.proposed { border-color:var(--blue-200); border-left:4px solid var(--blue-500); }
+    .match-nodes { display:grid; grid-template-columns:1fr auto 1fr; gap:var(--sp-5); align-items:center; margin:var(--sp-5) 0; }
+    .match-node { text-align:center; padding:var(--sp-4); background:var(--bg-muted); border-radius:var(--r-lg); border:1px solid var(--border); }
+    .match-node-icon { font-size:32px; margin-bottom:var(--sp-2); }
+    .match-node-name { font-weight:700; font-size:var(--fs-base); color:var(--text-primary); margin-bottom:2px; }
+    .match-node-team { font-size:var(--fs-xs); color:var(--text-muted); }
+    .match-pct { text-align:center; }
+    .match-pct-val { font-family:var(--font-heading); font-size:var(--fs-3xl); font-weight:800; }
+    .evolved-card { background:linear-gradient(135deg,#EFF6FF,#F0FDF4); border:2px solid var(--blue-200); border-radius:var(--r-xl); padding:var(--sp-8); }
+    .feature-attr { display:flex; gap:var(--sp-3); padding:var(--sp-3); border-radius:var(--r-md); margin-bottom:var(--sp-2); font-size:var(--fs-sm); align-items:flex-start; }
+    .feature-attr.from-a { background:var(--blue-50); border-left:3px solid var(--blue-500); }
+    .feature-attr.from-b { background:var(--green-50); border-left:3px solid var(--green-500); }
+    .feature-attr.from-c { background:var(--purple-50); border-left:3px solid var(--purple-500); }
+    .timeline-item { display:flex; gap:var(--sp-4); padding-bottom:var(--sp-5); position:relative; }
+    .timeline-item::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:2px; background:var(--border); }
+    .timeline-item:last-child::before { display:none; }
+    .timeline-dot { width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:2px solid var(--border);background:#fff; }
+    .timeline-dot.done    { background:var(--green-500);border-color:var(--green-500);color:#fff; }
+    .timeline-dot.active  { background:var(--blue-600);border-color:var(--blue-600);color:#fff; }
+    .timeline-dot.pending { background:var(--bg-muted);color:var(--text-muted); }
+    .timeline-date  { font-size:var(--fs-xs);color:var(--text-muted);font-weight:500;margin-bottom:2px; }
+    .timeline-title { font-weight:700;font-size:var(--fs-sm);color:var(--text-primary);margin-bottom:4px; }
+    .timeline-body  { font-size:var(--fs-xs);color:var(--text-secondary);line-height:1.6; }
+  </style>
+</head>
+<body data-page="collaborate">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo</span>
+        <div id="authArea" class="auth-area"></div></div>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)">
+
+      <!-- Page Header -->
+      <div style="margin-bottom:var(--sp-6)">
+        <div class="flex gap-2 mb-2"><a href="ai-analysis.html" style="color:var(--text-muted);font-size:var(--fs-sm)">Solution Analysis</a><span style="color:var(--text-muted)">›</span><span style="font-size:var(--fs-sm);color:var(--text-secondary)">Collaboration</span></div>
+        <h1 style="font-size:var(--fs-2xl);margin-bottom:var(--sp-2)">🤝 Collaboration & Solution Evolution</h1>
+        <p>AI detected 3 high-compatibility solution pairs across all open problems. Collaboration preserves full attribution for all contributing teams.</p>
+      </div>
+
+      <!-- Workflow Bar -->
+            <!-- InnovateX Journey -->
+      <div class="ix-journey" style="margin-bottom:var(--sp-8)">
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#127991;</span></div><div class="ix-node-label">Category</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128203;</span></div><div class="ix-node-label">Problem</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128161;</span></div><div class="ix-node-label">Solutions</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#9889;</span></div><div class="ix-node-label">Solution Analysis</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#127942;</span></div><div class="ix-node-label">Shortlist</div></div>
+        <div class="ix-journey-node active"><div class="ix-node-circle"><span class="ix-node-icon">&#129309;</span></div><div class="ix-node-label">Collaborate</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#128640;</span></div><div class="ix-node-label">Pilot</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#9989;</span></div><div class="ix-node-label">Decision</div></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('matches', this)">🤝 Collaboration Matches (3)</button>
+        <button class="tab-btn" onclick="switchTab('evolved', this)">⚡ Evolved Solutions</button>
+        <button class="tab-btn" onclick="switchTab('workspace', this)">🛠️ Workspace</button>
+        <button class="tab-btn" onclick="switchTab('timeline', this)">📅 Timeline</button>
+      </div>
+
+      <!-- Matches Tab -->
+      <div id="tab-matches" class="tab-content active">
+
+        <!-- Match 1: Accepted -->
+        <div class="match-card active anim-fade-up delay-1">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-2)">
+            <div>
+              <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:4px">CropSense AI + FarmVision</div>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted)">Agriculture · Early Crop Disease Detection</div>
+            </div>
+            <div class="flex gap-3 items-center">
+              <span class="badge badge-green">✅ Collaboration Accepted</span>
+              <span style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--green-600)">94% Match</span>
+            </div>
+          </div>
+          <div class="match-nodes">
+            <div class="match-node">
+              <div class="match-node-icon">🌱</div>
+              <div class="match-node-name">CropSense AI</div>
+              <div class="match-node-team">AgriNova · AI Score 93/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--blue-700);background:var(--blue-50);padding:4px 8px;border-radius:4px">Strength: Offline AI image diagnosis</div>
+            </div>
+            <div class="match-pct">
+              <div class="match-pct-val" style="color:var(--green-600)">94%</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:var(--sp-2)">Compatibility</div>
+              <div style="font-size:20px;color:var(--text-muted)">⟷</div>
+            </div>
+            <div class="match-node">
+              <div class="match-node-icon">🛰️</div>
+              <div class="match-node-name">FarmVision</div>
+              <div class="match-node-team">FarmVision Labs · AI Score 87/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--green-700);background:var(--green-50);padding:4px 8px;border-radius:4px">Strength: Satellite field monitoring</div>
+            </div>
+          </div>
+          <div class="info-box success mb-4">
+            <strong>AI Rationale:</strong> CropSense AI provides plant-level offline diagnosis; FarmVision provides field-level satellite monitoring. Their approaches are architecturally non-overlapping and together cover every scale of crop monitoring — from individual leaf to entire fields.
+          </div>
+          <div class="grid-3 mb-4">
+            <div style="text-align:center;padding:var(--sp-3);background:var(--bg-muted);border-radius:var(--r-md)"><div style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--green-600)">96+</div><div style="font-size:10px;color:var(--text-muted)">Projected Combined Score</div></div>
+            <div style="text-align:center;padding:var(--sp-3);background:var(--bg-muted);border-radius:var(--r-md)"><div style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--blue-600)">7</div><div style="font-size:10px;color:var(--text-muted)">Combined Team Members</div></div>
+            <div style="text-align:center;padding:var(--sp-3);background:var(--bg-muted);border-radius:var(--r-md)"><div style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--text-primary)">Sep 10</div><div style="font-size:10px;color:var(--text-muted)">Collaboration Start</div></div>
+          </div>
+          <div class="flex gap-3 justify-end">
+            <button class="btn btn-outline btn-sm" onclick="switchTab('workspace', document.querySelector('.tab-btn:nth-child(3)'))">Open Workspace</button>
+            <button class="btn btn-success btn-sm" onclick="switchTab('evolved', document.querySelector('.tab-btn:nth-child(2)'))">View Evolved Solution →</button>
+          </div>
+        </div>
+
+        <!-- Match 2: Proposed -->
+        <div class="match-card proposed anim-fade-up delay-2">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-2)">
+            <div>
+              <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:4px">CropSense AI + VoiceAgri</div>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted)">Agriculture · Early Crop Disease Detection</div>
+            </div>
+            <div class="flex gap-3 items-center">
+              <span class="badge badge-amber">⏳ Awaiting Response</span>
+              <span style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--blue-600)">81% Match</span>
+            </div>
+          </div>
+          <div class="match-nodes">
+            <div class="match-node">
+              <div class="match-node-icon">🌱</div>
+              <div class="match-node-name">CropSense AI</div>
+              <div class="match-node-team">AgriNova · AI Score 93/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--blue-700);background:var(--blue-50);padding:4px 8px;border-radius:4px">Strength: Image-based diagnosis</div>
+            </div>
+            <div class="match-pct">
+              <div class="match-pct-val" style="color:var(--blue-600)">81%</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:var(--sp-2)">Compatibility</div>
+              <div style="font-size:20px;color:var(--text-muted)">⟷</div>
+            </div>
+            <div class="match-node">
+              <div class="match-node-icon">🎙️</div>
+              <div class="match-node-name">VoiceAgri</div>
+              <div class="match-node-team">VoiceAgri Team · AI Score 85/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--purple-700);background:var(--purple-50);padding:4px 8px;border-radius:4px">Strength: Voice + 12 languages + USSD</div>
+            </div>
+          </div>
+          <div class="info-box mb-4">
+            <strong>AI Rationale:</strong> Combining CropSense AI's visual diagnosis with VoiceAgri's multilingual voice interface would serve 100% of farmer demographics — both smartphone and feature-phone users in 12+ regional languages.
+          </div>
+          <div class="flex gap-3 justify-end">
+            <button class="btn btn-outline btn-sm" onclick="showToast('Collaboration invitation sent to VoiceAgri Team','success')">📧 Send Invite</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Proposal accepted!','success')">✅ Accept Proposal</button>
+          </div>
+        </div>
+
+        <!-- Match 3: Healthcare -->
+        <div class="match-card active anim-fade-up delay-3">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-2)">
+            <div>
+              <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:4px">SepsisSense AI + BioWatch Portable</div>
+              <div style="font-size:var(--fs-sm);color:var(--text-muted)">Healthcare · Rural Healthcare Diagnostics</div>
+            </div>
+            <div class="flex gap-3 items-center">
+              <span class="badge badge-green">🔵 Active Collaboration</span>
+              <span style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:800;color:var(--green-600)">94% Match</span>
+            </div>
+          </div>
+          <div class="match-nodes">
+            <div class="match-node">
+              <div class="match-node-icon">🧠</div>
+              <div class="match-node-name">SepsisSense AI</div>
+              <div class="match-node-team">SepsisSense · AI Score 92/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--blue-700);background:var(--blue-50);padding:4px 8px;border-radius:4px">Strength: Edge ML inference + ICU hardware</div>
+            </div>
+            <div class="match-pct">
+              <div class="match-pct-val" style="color:var(--green-600)">94%</div>
+              <div style="font-size:10px;color:var(--text-muted);margin-bottom:var(--sp-2)">Compatibility</div>
+              <div style="font-size:20px;color:var(--text-muted)">⟷</div>
+            </div>
+            <div class="match-node">
+              <div class="match-node-icon">⌚</div>
+              <div class="match-node-name">BioWatch Portable</div>
+              <div class="match-node-team">BioWatch · AI Score 87/100</div>
+              <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--green-700);background:var(--green-50);padding:4px 8px;border-radius:4px">Strength: Federated learning + wearable mesh</div>
+            </div>
+          </div>
+          <div class="info-box success">
+            <strong>Status:</strong> This collaboration is active. Teams have co-designed "SepsisMesh Intelligence" — now in pilot at Rajiv Gandhi District Hospital, Pune with 91% detection accuracy.
+          </div>
+          <div class="flex justify-end mt-4">
+            <a href="pilot.html" class="btn btn-success btn-sm">View Pilot Results →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evolved Solutions Tab -->
+      <div id="tab-evolved" class="tab-content">
+        <div class="section-header mb-6"><h2 style="font-size:var(--fs-xl)">⚡ Evolved Solutions</h2></div>
+
+        <!-- Evolved 1 -->
+        <div class="evolved-card mb-6 anim-fade-up">
+          <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-4)">
+            <span class="badge badge-blue">⚡ Evolved Solution</span>
+            <span class="badge badge-green">Agriculture</span>
+          </div>
+          <h2 style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--sp-3)">Integrated Rural Crop Intelligence Platform</h2>
+          <p style="font-size:var(--fs-md);color:var(--text-secondary);max-width:700px;line-height:1.7;margin-bottom:var(--sp-5)">A combined platform delivering both in-field smartphone AI diagnosis and satellite-level field monitoring, giving farmers a complete early warning and advisory system — from individual leaf symptoms to field-wide stress patterns.</p>
+
+          <div class="grid-3 mb-6">
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--green-600)">96+</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Projected AI Score</div></div>
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--blue-600)">7</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Team Members</div></div>
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--amber-600)">6</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Tech Dimensions ≥85</div></div>
+          </div>
+
+          <h4 style="font-weight:700;margin-bottom:var(--sp-3)">🔧 Feature Attribution</h4>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp-2);margin-bottom:var(--sp-6)">
+            <div class="feature-attr from-a"><span>🌱</span><div><strong>AI Image Diagnosis</strong> — CropSense AI (AgriNova). 50+ disease detection from smartphone photo, offline-capable.</div></div>
+            <div class="feature-attr from-b"><span>🛰️</span><div><strong>Satellite Field Monitoring</strong> — FarmVision (FarmVision Labs). Multispectral stress detection at field scale.</div></div>
+            <div class="feature-attr from-a"><span>📱</span><div><strong>Offline Mobile App</strong> — CropSense AI (AgriNova). React Native app working with zero connectivity.</div></div>
+            <div class="feature-attr from-b"><span>🗺️</span><div><strong>Weekly Farm Health Reports</strong> — FarmVision (FarmVision Labs). Automated PDF/push reports per farm.</div></div>
+            <div class="feature-attr from-a"><span>🗣️</span><div><strong>Multilingual Interface</strong> — CropSense AI (AgriNova). 12 regional language support.</div></div>
+            <div class="feature-attr from-b"><span>📡</span><div><strong>Sentinel-2 Data Pipeline</strong> — FarmVision (FarmVision Labs). Free ESA satellite imagery integration.</div></div>
+          </div>
+          <div class="info-box warning mb-5">
+            <strong>⚠️ Attribution Notice:</strong> Neither AgriNova nor FarmVision Labs have merged into a single company. Each team retains IP rights to their own contributions as listed above. The evolved solution is a technical integration, not a business merger.
+          </div>
+          <div class="flex gap-3 flex-wrap">
+            <a href="pilot.html" class="btn btn-primary">🚀 Submit for Pilot</a>
+            <button class="btn btn-outline" onclick="showToast('Architecture document exported!','success')">📥 Export Architecture</button>
+          </div>
+        </div>
+
+        <!-- Evolved 2: SepsisMesh -->
+        <div class="evolved-card anim-fade-up delay-2" style="border-color:var(--rose-200);background:linear-gradient(135deg,#FFF1F2,#F0FDF4)">
+          <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-4)">
+            <span class="badge badge-rose">⚡ Evolved Solution</span>
+            <span class="badge badge-rose">Healthcare</span>
+            <span class="badge badge-green">✅ In Pilot</span>
+          </div>
+          <h2 style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--sp-3)">SepsisMesh Intelligence</h2>
+          <p style="font-size:var(--fs-md);color:var(--text-secondary);max-width:700px;line-height:1.7;margin-bottom:var(--sp-5)">A federated, edge-native sepsis intelligence system combining real-time wearable monitoring with privacy-preserving federated learning. 7+ hour early warning, no new hardware required, deployed at Rajiv Gandhi District Hospital, Pune.</p>
+          <div class="grid-3 mb-6">
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--green-600)">91%</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Detection Accuracy (Pilot)</div></div>
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--rose-600)">-31%</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Mortality Reduction</div></div>
+            <div style="text-align:center;padding:var(--sp-4);background:#fff;border:1px solid var(--border);border-radius:var(--r-lg)"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:800;color:var(--blue-600)">92</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">AI Eval Score</div></div>
+          </div>
+          <div class="flex gap-3 flex-wrap">
+            <a href="pilot.html" class="btn btn-primary">View Pilot Dashboard →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workspace Tab -->
+      <div id="tab-workspace" class="tab-content">
+        <div class="grid-2 mb-6">
+          <div class="card" style="padding:0">
+            <div style="padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:700;font-size:var(--fs-sm)">💬 Team Chat — CropSense AI + FarmVision</div>
+              <span class="badge badge-green">4 online</span>
+            </div>
+            <div style="padding:var(--sp-4)">
+              <div class="chat-box" id="chatBox">
+                <div class="chat-msg"><div class="chat-avatar">🌱</div><div><div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">AgriNova Team</div><div class="chat-bubble">Hi FarmVision! Can we integrate your Sentinel-2 pipeline with our MQTT broker for real-time sync?</div><div class="chat-time">10:32 AM</div></div></div>
+                <div class="chat-msg"><div class="chat-avatar">🛰️</div><div><div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">FarmVision Labs</div><div class="chat-bubble">Absolutely! We can publish field health scores as MQTT topics. Should be straightforward to integrate.</div><div class="chat-time">10:34 AM</div></div></div>
+                <div class="chat-msg self"><div class="chat-avatar">👤</div><div><div class="chat-bubble">Great! Let's target weekly satellite runs synced with the daily mobile AI reports.</div><div class="chat-time">10:36 AM</div></div></div>
+                <div class="chat-msg"><div class="chat-avatar">🌱</div><div><div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">AgriNova Team</div><div class="chat-bubble">Agreed. We're also adding GeoJSON field boundaries. We can overlay satellite alerts on the farm map view.</div><div class="chat-time">10:39 AM</div></div></div>
+                <div class="chat-msg"><div class="chat-avatar">🛰️</div><div><div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">FarmVision Labs</div><div class="chat-bubble">Perfect. Should we target a prototype demo by Sep 25? That gives us time before the pilot evaluation.</div><div class="chat-time">10:42 AM</div></div></div>
+              </div>
+              <div style="display:flex;gap:var(--sp-2);margin-top:var(--sp-3)">
+                <input class="form-input" id="chatInput" placeholder="Type a message…" style="flex:1"/>
+                <button class="btn btn-primary btn-sm" id="chatSend">Send</button>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="padding:0">
+            <div style="padding:var(--sp-4) var(--sp-5);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:700;font-size:var(--fs-sm)">📝 Shared Architecture Notes</div>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Notes saved!','success')">Save</button>
+            </div>
+            <div style="padding:var(--sp-4)">
+              <textarea class="form-textarea" style="min-height:260px;font-family:var(--font-mono);font-size:12px">## Integrated Rural Crop Intelligence Platform
+
+### Mobile AI Layer (AgriNova)
+- TF Lite model trained on 2M crop images
+- 50+ disease types, 94% accuracy
+- React Native app, offline-first
+- MQTT publish: per-photo diagnosis + GPS coords
+
+### Satellite Layer (FarmVision Labs)
+- Sentinel-2 multispectral imagery (weekly)
+- NDVI + NDRE stress indices per field
+- GeoJSON field boundary overlay
+- MQTT publish: field_health_score (0-100)
+
+### Integration Points
+- Shared MQTT broker (farm_id namespace)
+- Combined farm dashboard (React web)
+- Unified alert system: mobile + SMS + WhatsApp
+- Weekly combined report (PDF + push)
+
+### Target: Prototype demo Sep 25, 2026
+</textarea>
+              <div class="flex gap-2 mt-3">
+                <button class="btn btn-outline btn-sm" onclick="copyToClipboard('Architecture notes copied!')">📋 Copy</button>
+                <button class="btn btn-outline btn-sm" onclick="showToast('Exported to PDF!','success')">📥 Export</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Compatibility breakdown -->
+        <div class="card">
+          <div style="font-weight:700;margin-bottom:var(--sp-5)">🔍 Compatibility Breakdown</div>
+          <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
+            <div class="score-row"><div class="score-row-label">Architectural Fit</div><div class="score-row-bar"><div class="progress"><div class="progress-fill green" style="width:96%"></div></div></div><div class="score-row-val" style="color:var(--green-600)">96/100</div></div>
+            <div class="score-row"><div class="score-row-label">Domain Alignment</div><div class="score-row-bar"><div class="progress"><div class="progress-fill" style="width:100%"></div></div></div><div class="score-row-val" style="color:var(--blue-600)">100/100</div></div>
+            <div class="score-row"><div class="score-row-label">Tech Stack Overlap</div><div class="score-row-bar"><div class="progress"><div class="progress-fill" style="width:78%"></div></div></div><div class="score-row-val">78/100</div></div>
+            <div class="score-row"><div class="score-row-label">Complementarity</div><div class="score-row-bar"><div class="progress"><div class="progress-fill green" style="width:95%"></div></div></div><div class="score-row-val" style="color:var(--green-600)">95/100</div></div>
+            <div class="score-row"><div class="score-row-label">Team Availability</div><div class="score-row-bar"><div class="progress"><div class="progress-fill" style="width:88%"></div></div></div><div class="score-row-val">88/100</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Tab -->
+      <div id="tab-timeline" class="tab-content">
+        <div class="card">
+          <h3 style="font-weight:700;margin-bottom:var(--sp-6)">📅 Collaboration Evolution Timeline</h3>
+          <div style="padding-left:var(--sp-2)">
+            <div class="timeline-item"><div class="timeline-dot done">✓</div><div><div class="timeline-date">Sep 02, 2026</div><div class="timeline-title">💡 CropSense AI submitted</div><div class="timeline-body">AgriNova submitted edge AI solution with 93/100 AI score.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot done">✓</div><div><div class="timeline-date">Sep 04, 2026</div><div class="timeline-title">💡 FarmVision submitted</div><div class="timeline-body">FarmVision Labs submitted satellite monitoring solution with 87/100 AI score.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot done">✓</div><div><div class="timeline-date">Sep 08, 2026</div><div class="timeline-title">🤖 Solution Analysis completed</div><div class="timeline-body">7 solutions analysed. Top 3 shortlisted: CropSense (93), FarmVision (87), VoiceAgri (85).</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot done">✓</div><div><div class="timeline-date">Sep 09, 2026</div><div class="timeline-title">🤝 Collaboration match detected</div><div class="timeline-body">AI identified 94% architectural compatibility between CropSense AI and FarmVision.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot done">✓</div><div><div class="timeline-date">Sep 10, 2026</div><div class="timeline-title">✅ Both teams accepted collaboration</div><div class="timeline-body">Collaboration workspace activated. First joint call completed.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot active">→</div><div><div class="timeline-date">Sep 12, 2026 — In Progress</div><div class="timeline-title">⚡ Evolved solution architecture designed</div><div class="timeline-body">Integration architecture 65% complete. MQTT integration spec finalized. Prototype target: Sep 25.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot pending">○</div><div><div class="timeline-date">Sep 25, 2026 — Upcoming</div><div class="timeline-title">🚀 Prototype demo</div><div class="timeline-body">Combined platform demo to National Agriculture Innovation Lab.</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot pending">○</div><div><div class="timeline-date">Oct 05, 2026 — Upcoming</div><div class="timeline-title">🏗️ Pilot approval decision</div><div class="timeline-body">Organisation reviews evolved solution and decides on pilot deployment scope.</div></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>
+
+
+
+
+

@@ -23,6 +23,7 @@ app.use(express.json({ limit: '4mb' }));
 
 /* ── Static files ───────────────────────────────────────────── */
 // Serve all HTML, CSS, JS, images from the project root
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname)));
 
 // Explicit routes for all HTML pages

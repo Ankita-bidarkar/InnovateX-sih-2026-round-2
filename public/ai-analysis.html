@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Solution Analysis & Shortlisting — InnovateX</title>
+  <meta name="description" content="InnovateX AI evaluates all solutions across 6 dimensions and produces explainable ranked shortlists with collaboration detection."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .rank-card { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-xl); padding:var(--sp-6); margin-bottom:var(--sp-5); box-shadow:var(--shadow-card); }
+    .rank-card.rank-1 { border-color:#FCD34D; border-left:4px solid #F59E0B; }
+    .rank-card.rank-2 { border-color:var(--blue-200); border-left:4px solid var(--blue-500); }
+    .rank-card.rank-3 { border-color:#D1D5DB; border-left:4px solid #6B7280; }
+    .rank-num { width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--fs-lg);flex-shrink:0; }
+    .rank-num.r1 { background:#FFFBEB;color:#D97706;border:2px solid #FCD34D; }
+    .rank-num.r2 { background:var(--blue-50);color:var(--blue-700);border:2px solid var(--blue-200); }
+    .rank-num.r3 { background:var(--bg-muted);color:#6B7280;border:2px solid #D1D5DB; }
+    .dim-breakdown { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--sp-4); margin:var(--sp-5) 0; }
+    .dim-cell { text-align:center; padding:var(--sp-3); background:var(--bg-muted); border-radius:var(--r-md); }
+    .dim-score { font-family:var(--font-heading); font-size:var(--fs-xl); font-weight:800; }
+    .dim-label { font-size:10px; color:var(--text-muted); font-weight:500; margin-top:2px; }
+    .compare-cell { padding:10px 16px; text-align:center; border-bottom:1px solid var(--border-light); }
+    .compare-header { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; }
+    .risk-item { display:flex; gap:var(--sp-3); padding:var(--sp-3); background:var(--amber-50); border:1px solid var(--amber-100); border-radius:var(--r-md); margin-bottom:var(--sp-2); font-size:var(--fs-sm); color:var(--text-secondary); }
+    .insight-row { padding:var(--sp-4); border-bottom:1px solid var(--border-light); display:flex; gap:var(--sp-3); }
+    .insight-row:last-child { border-bottom:none; }
+  </style>
+</head>
+<body data-page="ai-analysis">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo</span>
+        <div id="authArea" class="auth-area"></div></div>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)">
+
+      <!-- Page Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-6);margin-bottom:var(--sp-6);flex-wrap:wrap">
+        <div>
+          <div class="flex gap-2 mb-2"><a href="problem.html" style="color:var(--text-muted);font-size:var(--fs-sm)">Problems</a><span style="color:var(--text-muted)">›</span><span id="analysisProblemCrumb" style="font-size:var(--fs-sm);color:var(--text-secondary)">Early Crop Disease Detection for Small Farmers</span></div>
+          <h1 id="analysisProblemTitle" style="font-size:var(--fs-2xl);margin-bottom:var(--sp-2)">🤖 Solution Analysis & Shortlisting — Early Crop Disease Detection for Small Farmers</h1>
+          <p>InnovateX AI evaluated all 7 submitted solutions using 6 weighted dimensions. Results are explainable and auditable.</p>
+        </div>
+        <button class="btn btn-primary" id="runAnalysisBtn">⚡ Re-run Analysis</button><a class="btn btn-outline" href="expert-review.html" style="margin-left:8px">👩‍⚖️ Expert Review →</a>
+      </div>
+
+
+      <div class="card mb-8" style="border-color:var(--blue-200);background:var(--blue-50)">
+        <div style="font-weight:800;margin-bottom:6px">Analyse by Category &amp; Problem</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Select a category to see its problems, then analyse the solutions submitted to that specific problem.</div>
+        <div class="grid-2">
+          <div><label class="form-label">Category</label><select id="analysisCategorySelect" class="form-input"></select></div>
+          <div><label class="form-label">Problem</label><select id="analysisProblemSelect" class="form-input"></select></div>
+        </div>
+      </div>
+
+            <!-- InnovateX Journey -->
+      <div class="ix-journey" style="margin-bottom:var(--sp-8)">
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#127991;</span></div><div class="ix-node-label">Category</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128203;</span></div><div class="ix-node-label">Problem</div></div>
+        <div class="ix-journey-node done"><div class="ix-node-circle"><span class="ix-node-icon">&#128161;</span></div><div class="ix-node-label">Solutions</div></div>
+        <div class="ix-journey-node active"><div class="ix-node-circle"><span class="ix-node-icon">&#9889;</span></div><div class="ix-node-label">Solution Analysis</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#127942;</span></div><div class="ix-node-label">Shortlist</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#129309;</span></div><div class="ix-node-label">Collaborate</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#128640;</span></div><div class="ix-node-label">Pilot</div></div>
+        <div class="ix-journey-node"><div class="ix-node-circle"><span class="ix-node-icon">&#9989;</span></div><div class="ix-node-label">Decision</div></div>
+      </div>
+
+      <!-- Intelligence Showcase -->
+      <section class="ix-intelligence-showcase">
+        <div class="ix-intel-copy">
+          <div class="section-label">EXPLAINABLE INTELLIGENCE</div>
+          <h2>From proposal → evidence, not just a number.</h2>
+          <p>InnovateX breaks every proposal into six transparent dimensions, surfaces strengths and risks, then sends the evidence into human review and pilot testing.</p>
+          <div class="ix-intel-flow">
+            <span>Proposal</span><b>→</b><span>AI prediction</span><b>→</b><span>Expert review</span><b>→</b><span>Pilot evidence</span>
+          </div>
+        </div>
+        <div class="ix-intel-score">
+          <div class="ix-score-ring"><div><strong>93</strong><small>AI score</small></div></div>
+          <div class="ix-score-note"><span>Structured prediction</span><small>Not a procurement decision</small></div>
+        </div>
+        <div class="ix-dimension-grid">
+          <div><span>Relevance</span><strong>24 pts</strong><i><em style="width:96%"></em></i></div>
+          <div><span>Innovation</span><strong>18 pts</strong><i><em style="width:90%"></em></i></div>
+          <div><span>Feasibility</span><strong>19 pts</strong><i><em style="width:95%"></em></i></div>
+          <div><span>Impact</span><strong>19 pts</strong><i><em style="width:100%"></em></i></div>
+          <div><span>Scalability</span><strong>9 pts</strong><i><em style="width:90%"></em></i></div>
+          <div><span>Cost efficiency</span><strong>4 pts</strong><i><em style="width:40%"></em></i></div>
+        </div>
+        <div class="ix-evidence-strip">
+          <div><span>AI PREDICTION</span><strong>Pre-pilot</strong><small>What the structured engine expects</small></div>
+          <div class="ix-evidence-arrow">VS</div>
+          <div><span>PILOT EVIDENCE</span><strong>Observed</strong><small>What real-world KPIs show</small></div>
+          <a href="pilot.html" class="btn btn-dark btn-sm">See Pilot Evidence →</a>
+        </div>
+      </section>
+
+      <!-- AI trigger progress bar -->
+      <div id="aiProgressBox" class="card mb-8" style="display:none;text-align:center;padding:var(--sp-8)">
+        <div style="font-size:36px;margin-bottom:var(--sp-4)">🤖</div>
+        <div style="font-weight:700;font-size:var(--fs-lg);margin-bottom:var(--sp-3)" id="aiStatus">Initialising AI Engine…</div>
+        <div class="progress progress-lg" style="max-width:480px;margin:0 auto"><div class="progress-fill" id="aiProgressBar" style="width:0%;transition:width 0.6s ease"></div></div>
+      </div>
+
+      <!-- AI Results (shown by default) -->
+      <div id="aiResults">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:var(--sp-3)">
+          <span id="aiModeBadge" class="ai-mode-badge demo" style="display:inline-flex">⚡ InnovateX Intelligence Engine</span>
+        </div>
+        <div id="dynamicAnalysisResults" style="display:none"></div>
+        <div id="legacyP001Results">
+
+        <!-- Summary Row -->
+        <div class="grid-4 mb-8">
+          <div class="stat-card"><div class="stat-icon blue">📊</div><div class="stat-label">Solutions Analysed</div><div class="stat-value">7</div></div>
+          <div class="stat-card"><div class="stat-icon green">🏆</div><div class="stat-label">Shortlisted</div><div class="stat-value">3</div><div class="stat-change up">Top 3 scored ≥85</div></div>
+          <div class="stat-card"><div class="stat-icon amber">⭐</div><div class="stat-label">Top Score</div><div class="stat-value">93<span style="font-size:var(--fs-lg);color:var(--text-muted)">/100</span></div><div class="stat-change up">CropSense AI</div></div>
+          <div class="stat-card"><div class="stat-icon purple">🤝</div><div class="stat-label">Collab Matches</div><div class="stat-value">2</div><div class="stat-change up">94% + 81% compat.</div></div>
+        </div>
+
+        <!-- Scoring Methodology -->
+        <div class="card mb-8" style="border-color:var(--blue-200);background:var(--blue-50)">
+          <div style="font-weight:700;color:var(--blue-800);margin-bottom:var(--sp-3)">🧮 AI Scoring Methodology</div>
+          <div style="display:flex;gap:var(--sp-4);flex-wrap:wrap">
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Problem Relevance <strong>25%</strong></div>
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Innovation <strong>20%</strong></div>
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Feasibility <strong>20%</strong></div>
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Expected Impact <strong>20%</strong></div>
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Scalability <strong>10%</strong></div>
+            <div style="font-size:var(--fs-sm);color:var(--blue-700)">Cost Efficiency <strong>5%</strong></div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid-2 mb-8">
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">🕸️ Solution Radar — Top 3</div>
+            <div style="height:280px;position:relative"><canvas id="radarChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div style="font-weight:700;margin-bottom:var(--sp-5)">📊 AI Confidence Scores — All 7</div>
+            <div style="height:280px;position:relative"><canvas id="scoreBarChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Shortlisted Rankings -->
+        <div class="mb-8">
+          <div class="section-header mb-5">
+            <h2 style="font-size:var(--fs-xl)">🏆 Shortlisted Solutions</h2>
+            <span class="badge badge-green">3 of 7 Selected</span>
+          </div>
+
+          <!-- Rank 1 -->
+          <div class="rank-card rank-1 anim-fade-up delay-1" data-solution-id="s001">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-4);margin-bottom:var(--sp-4);flex-wrap:wrap">
+              <div class="rank-num r1">1</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-2)">
+                  <h3 class="ix-solution-title" style="font-size:var(--fs-lg)">CropSense AI</h3>
+                  <span class="badge badge-amber">🏆 Top Pick</span>
+                  <span class="badge badge-green">Recommended for Pilot</span>
+                  <span class="badge badge-blue">🤝 Collab Potential</span>
+                </div>
+                <div class="ix-solution-meta" style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:var(--sp-3)">by AgriNova · 4 members · Edge ML + Mobile AI</div>
+                <div class="cost-tag" style="margin-bottom:var(--sp-3)">💰 Estimated Solution Cost: ₹8,50,000</div>
+                <p class="ix-solution-desc" style="font-size:var(--fs-sm);color:var(--text-secondary)">Mobile-first platform using transfer learning on 2M crop images to identify 50+ diseases in real-time, even offline. Works with any basic Android camera and supports 12 regional languages.</p>
+              </div>
+              <div style="text-align:center;flex-shrink:0;background:var(--amber-50);border:2px solid #FCD34D;border-radius:var(--r-xl);padding:var(--sp-4) var(--sp-6)">
+                <div class="ix-total-score" style="font-family:var(--font-heading);font-size:var(--fs-4xl);font-weight:800;color:#D97706;line-height:1">93</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-muted)">/100 AI Score</div>
+              </div>
+            </div>
+            <div class="dim-breakdown">
+              <div class="dim-cell"><div class="dim-score" style="color:var(--blue-600)">24 pts</div><div class="dim-label">Problem Relevance</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--purple-600)">18 pts</div><div class="dim-label">Innovation</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--green-600)">19 pts</div><div class="dim-label">Feasibility</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--amber-600)">19 pts</div><div class="dim-label">Impact</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--teal-600)">9 pts</div><div class="dim-label">Scalability</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--rose-600)">4/5</div><div class="dim-label">Cost Efficiency</div></div>
+            </div>
+            <div class="grid-2" style="gap:var(--sp-4);margin-bottom:var(--sp-4)">
+              <div>
+                <div style="font-size:var(--fs-xs);font-weight:700;color:var(--green-700);margin-bottom:6px">✅ Strengths</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-secondary)">• 94% disease detection accuracy<br/>• Completely offline-capable<br/>• 50+ crop disease types covered<br/>• Deployable with zero extra infrastructure</div>
+              </div>
+              <div>
+                <div style="font-size:var(--fs-xs);font-weight:700;color:var(--amber-600);margin-bottom:6px">⚠️ Weaknesses</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-secondary)">• Limited to visual symptoms only<br/>• Requires adequate camera quality<br/>• Pre-symptomatic detection not covered</div>
+              </div>
+            </div>
+            <div style="padding:var(--sp-3);background:var(--blue-50);border:1px solid var(--blue-100);border-radius:var(--r-md);font-size:var(--fs-xs);color:var(--blue-800);margin-bottom:var(--sp-4)">
+              <strong>🤖 AI Recommendation:</strong> Proceed to pilot immediately. Consider collaboration with FarmVision (94% compatibility) to add satellite field-level monitoring for complete coverage.
+            </div>
+            <div class="flex justify-end gap-3">
+              <a href="collaborate.html" class="btn btn-outline btn-sm">🤝 View Collaboration</a>
+              <a href="pilot.html" class="btn btn-success btn-sm">🚀 Move to Pilot →</a>
+            </div>
+          </div>
+
+          <!-- Rank 2 -->
+          <div class="rank-card rank-2 anim-fade-up delay-2" data-solution-id="s002">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-4);margin-bottom:var(--sp-4);flex-wrap:wrap">
+              <div class="rank-num r2">2</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-2)">
+                  <h3 class="ix-solution-title" style="font-size:var(--fs-lg)">FarmVision</h3>
+                  <span class="badge badge-green">✅ Shortlisted</span>
+                  <span class="badge badge-blue">🤝 Collab Potential</span>
+                </div>
+                <div class="ix-solution-meta" style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:var(--sp-3)">by FarmVision Labs · 3 members · Satellite Remote Sensing</div>
+                <div class="cost-tag" style="margin-bottom:var(--sp-3)">💰 Estimated Solution Cost: ₹12,00,000</div>
+                <p class="ix-solution-desc" style="font-size:var(--fs-sm);color:var(--text-secondary)">Multispectral satellite imagery detects crop stress signatures across entire fields, identifying disease outbreaks before they are visible to the naked eye. Weekly farm health reports.</p>
+              </div>
+              <div style="text-align:center;flex-shrink:0;background:var(--blue-50);border:2px solid var(--blue-200);border-radius:var(--r-xl);padding:var(--sp-4) var(--sp-6)">
+                <div class="ix-total-score" style="font-family:var(--font-heading);font-size:var(--fs-4xl);font-weight:800;color:var(--blue-700);line-height:1">87</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-muted)">/100 AI Score</div>
+              </div>
+            </div>
+            <div class="dim-breakdown">
+              <div class="dim-cell"><div class="dim-score" style="color:var(--blue-600)">23/25</div><div class="dim-label">Problem Relevance</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--purple-600)">17/20</div><div class="dim-label">Innovation</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--amber-600)">17/20</div><div class="dim-label">Feasibility</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--amber-600)">18 pts</div><div class="dim-label">Impact</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--teal-600)">9 pts</div><div class="dim-label">Scalability</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--rose-600)">3/5</div><div class="dim-label">Cost Efficiency</div></div>
+            </div>
+            <div class="flex justify-end gap-3 mt-4">
+              <a href="collaborate.html" class="btn btn-primary btn-sm">🤝 Explore Collaboration →</a>
+            </div>
+          </div>
+
+          <!-- Rank 3 -->
+          <div class="rank-card rank-3 anim-fade-up delay-3" data-solution-id="s003">
+            <div style="display:flex;align-items:flex-start;gap:var(--sp-4);margin-bottom:var(--sp-4);flex-wrap:wrap">
+              <div class="rank-num r3">3</div>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-2)">
+                  <h3 class="ix-solution-title" style="font-size:var(--fs-lg)">VoiceAgri</h3>
+                  <span class="badge badge-green">✅ Shortlisted</span>
+                </div>
+                <div class="ix-solution-meta" style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:var(--sp-3)">by VoiceAgri Team · 2 members · Voice AI + NLP</div>
+                <div class="cost-tag" style="margin-bottom:var(--sp-3)">💰 Estimated Solution Cost: ₹5,20,000</div>
+                <p class="ix-solution-desc" style="font-size:var(--fs-sm);color:var(--text-secondary)">Voice-first IVR and mobile app where farmers describe symptoms in 12 local languages and receive AI-generated diagnosis. No smartphone required — accessible via USSD on basic phones.</p>
+              </div>
+              <div style="text-align:center;flex-shrink:0;background:var(--bg-muted);border:2px solid #D1D5DB;border-radius:var(--r-xl);padding:var(--sp-4) var(--sp-6)">
+                <div class="ix-total-score" style="font-family:var(--font-heading);font-size:var(--fs-4xl);font-weight:800;color:#6B7280;line-height:1">85</div>
+                <div style="font-size:var(--fs-xs);color:var(--text-muted)">/100 AI Score</div>
+              </div>
+            </div>
+            <div class="dim-breakdown">
+              <div class="dim-cell"><div class="dim-score" style="color:var(--blue-600)">22/25</div><div class="dim-label">Problem Relevance</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--purple-600)">16/20</div><div class="dim-label">Innovation</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--green-600)">18 pts</div><div class="dim-label">Feasibility</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--amber-600)">17/20</div><div class="dim-label">Impact</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--teal-600)">8/10</div><div class="dim-label">Scalability</div></div>
+              <div class="dim-cell"><div class="dim-score" style="color:var(--green-600)">4/5</div><div class="dim-label">Cost Efficiency</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commonality Detection -->
+        <div class="mb-8">
+          <div class="section-header mb-5"><h2 style="font-size:var(--fs-xl)">🔍 Commonality Detection</h2></div>
+          <div class="card mb-5">
+            <div style="font-weight:700;margin-bottom:var(--sp-4)">Common Patterns Across All 7 Solutions</div>
+            <div class="grid-3" style="margin-bottom:var(--sp-5)">
+              <div style="padding:var(--sp-4);background:var(--blue-50);border:1px solid var(--blue-100);border-radius:var(--r-lg)">
+                <div style="font-weight:700;color:var(--blue-700);margin-bottom:6px">📱 Common Core</div>
+                <div style="font-size:var(--fs-xs);color:var(--blue-800)">6 of 7 solutions target mobile-first delivery. This signals strong consensus on deployment approach for rural contexts.</div>
+              </div>
+              <div style="padding:var(--sp-4);background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--r-lg)">
+                <div style="font-weight:700;color:var(--green-700);margin-bottom:6px">🤖 Shared Tech</div>
+                <div style="font-size:var(--fs-xs);color:var(--green-800)">5 of 7 use TensorFlow or PyTorch for ML. Python is universal across backends. React Native dominates frontend.</div>
+              </div>
+              <div style="padding:var(--sp-4);background:var(--amber-50);border:1px solid var(--amber-100);border-radius:var(--r-lg)">
+                <div style="font-weight:700;color:var(--amber-700);margin-bottom:6px">⚠️ Gap Found</div>
+                <div style="font-size:var(--fs-xs);color:var(--amber-800)">Only 1 solution covers pre-symptomatic detection (sensor-based). Most rely on visible symptoms appearing first.</div>
+              </div>
+            </div>
+            <!-- Feature Matrix -->
+            <div style="font-weight:700;margin-bottom:var(--sp-3)">Feature Comparison Matrix</div>
+            <div class="compare-matrix">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <th class="compare-header" style="text-align:center">CropSense AI</th>
+                    <th class="compare-header" style="text-align:center">FarmVision</th>
+                    <th class="compare-header" style="text-align:center">VoiceAgri</th>
+                    <th class="compare-header" style="text-align:center">AgroSense IoT</th>
+                    <th class="compare-header" style="text-align:center">CropCircle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Mobile App</td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td></tr>
+                  <tr><td>AI Diagnosis</td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td></tr>
+                  <tr><td>Offline Mode</td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td></tr>
+                  <tr><td>Voice Support</td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td></tr>
+                  <tr><td>Satellite Data</td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td></tr>
+                  <tr><td>IoT Sensors</td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td></tr>
+                  <tr><td>Multi-language</td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td></tr>
+                  <tr><td>Community Alerts</td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-cross">–</span></td><td class="compare-cell"><span class="compare-check">✓</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="mb-8">
+          <div class="section-header mb-5"><h2 style="font-size:var(--fs-xl)">💡 AI Insights & Recommendations</h2></div>
+          <div class="card">
+            <div class="insight-row">
+              <span style="font-size:20px;flex-shrink:0">📋</span>
+              <div><div style="font-weight:700;margin-bottom:4px">Summary</div><p style="font-size:var(--fs-sm)">After evaluating 7 solutions, CropSense AI leads with 93/100. The strongest pattern: edge-computing + offline approaches outperform cloud-dependent solutions on Feasibility in rural contexts (+12pts avg).</p></div>
+            </div>
+            <div class="insight-row">
+              <span style="font-size:20px;flex-shrink:0">🤝</span>
+              <div><div style="font-weight:700;color:var(--green-700);margin-bottom:4px">Collaboration Opportunity</div><p style="font-size:var(--fs-sm)">CropSense AI + FarmVision show 94% architectural compatibility — combining smartphone image diagnosis with satellite field monitoring creates complete per-plant and per-field coverage. Projected combined score: 96+.</p></div>
+            </div>
+            <div class="insight-row">
+              <span style="font-size:20px;flex-shrink:0">⚠️</span>
+              <div><div style="font-weight:700;color:var(--amber-600);margin-bottom:4px">Risk Flags</div>
+              <div class="risk-item mt-2"><span>⚠️</span><span><strong>FarmVision:</strong> Requires internet connectivity, reducing feasibility in remote areas where connectivity is limited.</span></div>
+              <div class="risk-item"><span>⚠️</span><span><strong>AgroSense IoT:</strong> High upfront sensor cost (₹12,000/farm) may reduce adoption in smallholder contexts.</span></div>
+              <div class="risk-item"><span>⚠️</span><span><strong>CropCircle Community:</strong> Crowdsourced accuracy depends on farmer adoption. Risk of misinformation if not validated.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collaboration Detection Preview -->
+        <div class="card" style="border-color:var(--green-200);background:var(--green-50)">
+          <div style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap">
+            <div style="font-size:32px">🤝</div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:var(--fs-lg);color:var(--green-800);margin-bottom:4px">2 Collaboration Opportunities Detected!</div>
+              <div style="font-size:var(--fs-sm);color:var(--green-700)">CropSense AI + FarmVision (94% match) · CropSense AI + VoiceAgri (81% match)</div>
+            </div>
+            <a href="collaborate.html" class="btn btn-success">Explore Collaboration →</a>
+          </div>
+        </div>
+
+        </div><!-- /legacyP001Results -->
+      </div><!-- /aiResults -->
+    </div>
+  </div>
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // InnovateX Intelligence handler is initialized by js/app.js.
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initCharts, 500));
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>
+
+
+
+
+

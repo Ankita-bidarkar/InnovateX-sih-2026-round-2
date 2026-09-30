@@ -41,3 +41,9 @@ Then open `http://localhost:3004`.
 - Added rendering of `ix_user_problems` into the existing Problems grid and made posted-problem details readable from the same localStorage data.
 - Ran `node --check` successfully against every JavaScript file in the project.
 - Full `npm ci` / browser-rendered end-to-end testing could not be completed in this environment because the dependency install timed out; this is explicitly not being represented as a successful runtime test.
+
+## v8 Vercel static-asset fix
+- Added a complete `public/` directory containing the browser-facing HTML, CSS, JS, and image assets.
+- Vercel's current Express deployment behavior serves `public/**` as static CDN assets; `express.static()` is not used by Vercel for static assets.
+- Updated local Express middleware to serve `public/` first while retaining the root fallback for local development.
+- Preserved the existing application/server/API code and all page content.

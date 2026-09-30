@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Dashboard — InnovateX</title>
+  <meta name="description" content="Your InnovateX innovation workspace. Monitor solutions, AI scores, collaboration opportunities and pilot progress."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+    .dash-stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--sp-4); margin-bottom: var(--sp-8); }
+    @media(max-width:900px){ .dash-stats-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:480px){ .dash-stats-grid { grid-template-columns: 1fr; } }
+    .dash-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
+    @media(max-width:900px){ .dash-two-col { grid-template-columns: 1fr; } }
+    .insight-card {
+      background: linear-gradient(135deg, var(--blue-50) 0%, var(--violet-50) 100%);
+      border: 1px solid var(--blue-100);
+      border-radius: var(--r-2xl);
+      padding: var(--sp-5);
+      margin-bottom: var(--sp-3);
+      position: relative;
+      overflow: hidden;
+    }
+    .insight-card::before { content: '✦ AI INSIGHT'; position: absolute; top: var(--sp-3); right: var(--sp-4); font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: var(--blue-700); opacity: 0.6; }
+    .insight-card .insight-text { font-size: 13.5px; font-weight: 600; color: var(--ix-text); line-height: 1.55; }
+    .pilot-bar-wrap { margin-bottom: var(--sp-4); }
+    .pilot-bar-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .pilot-bar-name   { font-size: 13px; font-weight: 700; color: var(--ix-text); }
+    .pilot-bar-pct    { font-size: 12px; font-weight: 700; color: var(--ix-accent); }
+  </style>
+</head>
+<body data-page="dashboard">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo</span>
+        <div id="authArea" class="auth-area"></div>
+        <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="dash-hero">
+    <div class="container">
+      <div class="dash-hero-inner">
+        <div>
+          <div id="rolePillLabel">🚀 Startup / Solution Provider</div>
+          <h1 style="font-family:var(--font-heading);font-weight:900;font-size:clamp(1.8rem,3.5vw,2.6rem);color:#fff;margin-bottom:var(--sp-2)">
+            Your InnovateX Dashboard
+          </h1>
+          <p style="color:rgba(255,255,255,0.55);font-size:var(--fs-base);max-width:520px">
+            <strong style="color:rgba(255,255,255,0.8)">Startup view:</strong> focus on your posted solutions, AI scores, collaboration opportunities and pilot progress.
+          </p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--sp-3)">
+          <div class="engine-status-pill"><div class="dot"></div>IX Engine Online</div>
+          <a href="ai-analysis.html" class="btn btn-primary" id="dashboardPrimaryCta">⚡ Run AI Analysis →</a>
+          <a href="problem.html?post=1" class="btn btn-outline" data-roles="organization">+ Post a Problem</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content" style="background:var(--ix-bg)">
+    <div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)">
+
+      <!-- Tabs -->
+      <div class="dash-tabs" id="dashTabs">
+        <button class="dash-tab active" onclick="switchTab('overview',this)">🏠 Overview</button>
+        <button class="dash-tab" onclick="switchTab('solutions',this)">💡 My Solutions</button>
+        <button class="dash-tab" onclick="switchTab('pilots',this)">🚀 Active Pilots</button>
+        <button class="dash-tab" onclick="switchTab('insights',this)">⚡ AI Insights</button>
+        <button class="dash-tab" onclick="switchTab('analytics',this)">📊 Analytics</button>
+      </div>
+
+      <!-- ── Overview Tab ── -->
+      <div class="dtab active" id="tab-overview">
+
+        <!-- Stats -->
+        <div class="dash-stats-grid">
+          <div class="stat-card anim-fade-up delay-1">
+            <div class="stat-icon blue">💡</div>
+            <div class="stat-label">My Solutions</div>
+            <div class="stat-value">12</div>
+            <div class="stat-change up">↑ 3 this month</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-2">
+            <div class="stat-icon purple">⚡</div>
+            <div class="stat-label">Avg AI Score</div>
+            <div class="stat-value">87<span style="font-size:var(--fs-lg);font-weight:600;color:var(--ix-muted)">/100</span></div>
+            <div class="stat-change up">↑ +4 pts from last cycle</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-3">
+            <div class="stat-icon amber">🏆</div>
+            <div class="stat-label">Shortlisted</div>
+            <div class="stat-value">4</div>
+            <div class="stat-change up">↑ 1 new shortlisting</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-4">
+            <div class="stat-icon teal">🤝</div>
+            <div class="stat-label">Collab Opportunities</div>
+            <div class="stat-value">3</div>
+            <div class="stat-change" style="color:var(--amber-600)">2 pending response</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-1">
+            <div class="stat-icon rose">🚀</div>
+            <div class="stat-label">Active Pilots</div>
+            <div class="stat-value">2</div>
+            <div class="stat-change up">Both exceeding targets</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-2">
+            <div class="stat-icon green">✅</div>
+            <div class="stat-label">Completed Pilots</div>
+            <div class="stat-value">1</div>
+            <div class="stat-change up">Scale approved</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-3">
+            <div class="stat-icon blue">📋</div>
+            <div class="stat-label">Problems Submitted To</div>
+            <div class="stat-value">8</div>
+            <div class="stat-change" style="color:var(--ix-muted)">Across 4 categories</div>
+          </div>
+          <div class="stat-card anim-fade-up delay-4">
+            <div class="stat-icon amber">📊</div>
+            <div class="stat-label">Total Votes Received</div>
+            <div class="stat-value">724</div>
+            <div class="stat-change up">↑ +87 this week</div>
+          </div>
+        </div>
+
+        <!-- Startup Trust -->
+        <div class="card anim-fade-up" style="margin-bottom:var(--sp-6)">
+          <div class="section-header" style="margin-bottom:var(--sp-4)">
+            <div>
+              <h3 style="font-size:var(--fs-xl);font-weight:800">🛡️ Startup Trust &amp; Verification</h3>
+              <p style="font-size:13px;color:var(--ix-muted);margin-top:4px">Demo startup verification overview — platform verification is separate from DPIIT recognition.</p>
+            </div>
+            <a href="startup-verification.html" class="btn btn-outline btn-sm">View Verification →</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-4);margin-bottom:var(--sp-3)">
+            <div style="text-align:center"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:900;color:var(--ix-text)">15</div><div style="font-size:11px;color:var(--ix-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Startups</div></div>
+            <div style="text-align:center"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:900;color:var(--ix-accent)">9</div><div style="font-size:11px;color:var(--ix-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">IX Verified</div></div>
+            <div style="text-align:center"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:900;color:var(--green-600)">5</div><div style="font-size:11px;color:var(--ix-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">DPIIT Recognised</div></div>
+            <div style="text-align:center"><div style="font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:900;color:var(--ix-text)">13/15</div><div style="font-size:11px;color:var(--ix-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Eligibility</div></div>
+          </div>
+          
+        </div>
+
+        <div class="dash-two-col">
+          <!-- Needs Attention -->
+          <div>
+            <div class="section-header" style="margin-bottom:var(--sp-4)">
+              <h3 style="font-size:var(--fs-lg);font-weight:800">⚠️ Needs Your Attention</h3>
+            </div>
+            <div class="attention-item warn" onclick="window.location='ai-analysis.html'">
+              <div style="font-size:24px">🔍</div>
+              <div>
+                <div style="font-weight:700;font-size:13.5px;color:var(--ix-text)">Review AI analysis for "Early Crop Disease Detection"</div>
+                <div style="font-size:12px;color:var(--ix-muted);margin-top:3px">3 solutions shortlisted — decision pending</div>
+              </div>
+            </div>
+            <div class="attention-item warn" onclick="window.location='collaborate.html'">
+              <div style="font-size:24px">🤝</div>
+              <div>
+                <div style="font-weight:700;font-size:13.5px;color:var(--ix-text)">Respond to collaboration request from BioWatch</div>
+                <div style="font-size:12px;color:var(--ix-muted);margin-top:3px">94% compatibility match · Expires in 2 days</div>
+              </div>
+            </div>
+            <div class="attention-item" onclick="window.location='pilot.html'">
+              <div style="font-size:24px">🚀</div>
+              <div>
+                <div style="font-weight:700;font-size:13.5px;color:var(--ix-text)">Pilot milestone due: EcoGrid Final Evaluation</div>
+                <div style="font-size:12px;color:var(--ix-muted);margin-top:3px">Oct 20, 2026 · 42 days remaining</div>
+              </div>
+            </div>
+            <div class="attention-item success" onclick="window.location='pilot.html'">
+              <div style="font-size:24px">✅</div>
+              <div>
+                <div style="font-weight:700;font-size:13.5px;color:var(--ix-text)">SepsisMesh pilot results available for review</div>
+                <div style="font-size:12px;color:var(--ix-muted);margin-top:3px">Decision by Oct 25 · 91% detection achieved</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div>
+            <div class="section-header" style="margin-bottom:var(--sp-4)">
+              <h3 style="font-size:var(--fs-lg);font-weight:800">🕐 Recent Activity</h3>
+            </div>
+            <div class="card" style="padding:var(--sp-4)">
+              <div class="activity-item">
+                <div class="activity-icon blue">💡</div>
+                <div class="activity-text"><strong>CropSense AI</strong> submitted to Early Crop Disease Detection</div>
+                <div class="activity-time">2h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon purple">⚡</div>
+                <div class="activity-text">AI analysis completed — <strong>5 solutions scored</strong> for Rural Healthcare</div>
+                <div class="activity-time">4h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon amber">🏆</div>
+                <div class="activity-text"><strong>SepsisSense AI</strong> shortlisted with score <strong>92/100</strong></div>
+                <div class="activity-time">5h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon teal">🤝</div>
+                <div class="activity-text">Collaboration request sent to <strong>FarmVision Labs</strong> (94% match)</div>
+                <div class="activity-time">8h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon green">🚀</div>
+                <div class="activity-text"><strong>EcoGrid Smart Energy</strong> — Active Optimization Phase started</div>
+                <div class="activity-time">1d ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon rose">📊</div>
+                <div class="activity-text"><strong>SepsisMesh:</strong> 31% mortality reduction recorded</div>
+                <div class="activity-time">3d ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /overview -->
+
+      <!-- ── Solutions Tab ── -->
+      <div class="dtab" id="tab-solutions">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-6);flex-wrap:wrap;gap:var(--sp-3)">
+          <h2 style="font-size:var(--fs-2xl);font-weight:800">My Solutions</h2>
+          <button class="btn btn-primary" onclick="showToast('Submit solution form — go to Problems page','info')">+ New Solution</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="startup-table" style="width:100%">
+            <thead><tr><th>Solution</th><th>Problem</th><th>AI Score</th><th>Status</th><th>Stage</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="sol-table-name">CropSense AI</div><div class="sol-table-sub">AgriNova · Agriculture</div></td>
+                <td style="font-size:13px;color:var(--ix-text-2)">Early Crop Disease Detection</td>
+                <td><span class="ai-score-pill excellent">93/100</span></td>
+                <td><span class="badge badge-amber">Shortlisted</span></td>
+                <td style="font-size:12px;color:var(--ix-muted)">Solution Analysis</td>
+                <td><a href="ai-analysis.html" class="btn btn-outline btn-sm">View →</a></td>
+              </tr>
+              <tr>
+                <td><div class="sol-table-name">SepsisSense AI</div><div class="sol-table-sub">MediTech · Healthcare</div></td>
+                <td style="font-size:13px;color:var(--ix-text-2)">Rural Healthcare Diagnostics</td>
+                <td><span class="ai-score-pill excellent">92/100</span></td>
+                <td><span class="badge badge-green">Pilot Active</span></td>
+                <td style="font-size:12px;color:var(--ix-muted)">Pilot</td>
+                <td><a href="pilot.html" class="btn btn-outline btn-sm">View →</a></td>
+              </tr>
+              <tr>
+                <td><div class="sol-table-name">AquaGrid Monitor</div><div class="sol-table-sub">WaterTech · Smart Cities</div></td>
+                <td style="font-size:13px;color:var(--ix-text-2)">Smart Water Management</td>
+                <td><span class="ai-score-pill good">85/100</span></td>
+                <td><span class="badge badge-teal">Collaboration</span></td>
+                <td style="font-size:12px;color:var(--ix-muted)">Collaboration</td>
+                <td><a href="collaborate.html" class="btn btn-outline btn-sm">View →</a></td>
+              </tr>
+              <tr>
+                <td><div class="sol-table-name">EcoGrid Smart Energy</div><div class="sol-table-sub">EcoTech · Energy</div></td>
+                <td style="font-size:13px;color:var(--ix-text-2)">Energy Optimization for SMEs</td>
+                <td><span class="ai-score-pill excellent">89/100</span></td>
+                <td><span class="badge badge-green">Pilot Active</span></td>
+                <td style="font-size:12px;color:var(--ix-muted)">Pilot</td>
+                <td><a href="pilot.html" class="btn btn-outline btn-sm">View →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Pilots Tab ── -->
+      <div class="dtab" id="tab-pilots">
+        <div style="margin-bottom:var(--sp-6)">
+          <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--sp-2)">Active Pilots</h2>
+          <p style="color:var(--ix-muted)">Real-world pilot progress tracked by the InnovateX Intelligence Engine.</p>
+        </div>
+        <div class="grid-2" style="gap:var(--sp-6)">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--sp-4)">
+              <div>
+                <div class="badge badge-green" style="margin-bottom:var(--sp-2)">🚀 Active — Phase 3</div>
+                <h3 style="font-size:var(--fs-xl);font-weight:800">SepsisMesh Diagnostics</h3>
+                <div style="font-size:13px;color:var(--ix-muted);margin-top:4px">Apollo Health Foundation · Maharashtra</div>
+              </div>
+              <a href="pilot.html" class="btn btn-primary btn-sm">View Pilot →</a>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Sepsis Detection Accuracy</span><span class="pilot-bar-pct">91%</span></div>
+              <div class="progress-bar"><div class="progress-fill green" style="width:91%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Target: 85% · <span style="color:var(--green-600);font-weight:600">Exceeded</span></div>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Mortality Reduction</span><span class="pilot-bar-pct">31%</span></div>
+              <div class="progress-bar"><div class="progress-fill violet" style="width:78%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Target: 25% · <span style="color:var(--green-600);font-weight:600">Exceeded</span></div>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Cost per Screening</span><span class="pilot-bar-pct">₹23</span></div>
+              <div class="progress-bar"><div class="progress-fill green" style="width:77%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Budget: ₹30 · <span style="color:var(--green-600);font-weight:600">Under budget</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--sp-4)">
+              <div>
+                <div class="badge badge-green" style="margin-bottom:var(--sp-2)">🚀 Active — Phase 2</div>
+                <h3 style="font-size:var(--fs-xl);font-weight:800">EcoGrid Smart Energy</h3>
+                <div style="font-size:13px;color:var(--ix-muted);margin-top:4px">TERI Foundation · Gujarat, Maharashtra</div>
+              </div>
+              <a href="pilot.html" class="btn btn-primary btn-sm">View Pilot →</a>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Energy Savings Achieved</span><span class="pilot-bar-pct">28%</span></div>
+              <div class="progress-bar"><div class="progress-fill green" style="width:80%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Target: 25% · <span style="color:var(--green-600);font-weight:600">Exceeded</span></div>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Facilities Covered</span><span class="pilot-bar-pct">12/15</span></div>
+              <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Target: 15 · On track</div>
+            </div>
+            <div class="pilot-bar-wrap">
+              <div class="pilot-bar-header"><span class="pilot-bar-name">Monthly Cost Savings</span><span class="pilot-bar-pct">₹1.2L</span></div>
+              <div class="progress-bar"><div class="progress-fill violet" style="width:60%"></div></div>
+              <div style="font-size:11px;color:var(--ix-muted);margin-top:4px">Target: ₹2L · Accumulating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AI Insights Tab ── -->
+      <div class="dtab" id="tab-insights">
+        <div style="margin-bottom:var(--sp-6)">
+          <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--sp-2)">AI Insights</h2>
+          <p style="color:var(--ix-muted)">Automatically generated insights from the InnovateX Intelligence Engine.</p>
+        </div>
+        <div class="insight-card">
+          <div class="insight-text">🤝 3 solutions in your portfolio show strong complementary capabilities with active proposals from other startups. CropSense AI + FarmVision Labs have a 94% compatibility match.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-text">🚀 2 pilots are approaching their KPI targets. SepsisMesh has exceeded all 3 primary targets — scale approval is recommended within 2 weeks.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-text">⚡ Your average AI score of 87/100 is in the top 12% of all solutions submitted this cycle. Relevance and Innovation dimensions are your strongest areas.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-text">📊 Early Crop Disease Detection shortlisting cycle closes in 38 days. 3 competing solutions have lower feasibility scores — your positioning is strong.</div>
+        </div>
+        <div style="margin-top:var(--sp-6);text-align:center">
+          <a href="ai-analysis.html" class="btn btn-primary">Run Full AI Analysis →</a>
+        </div>
+      </div>
+
+      <!-- ── Analytics Tab ── -->
+      <div class="dtab" id="tab-analytics">
+        <div style="margin-bottom:var(--sp-6)">
+          <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:var(--sp-2)">Analytics</h2>
+          <p style="color:var(--ix-muted)">Performance trends across all your solutions and pilots.</p>
+        </div>
+        <div class="grid-2" style="gap:var(--sp-6);margin-bottom:var(--sp-6)">
+          <div class="card">
+            <h3 style="font-size:var(--fs-lg);font-weight:800;margin-bottom:var(--sp-4)">Score Distribution</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--sp-3)">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Relevance</span><span style="color:var(--ix-accent);font-weight:700">24/25</span></div><div class="progress-bar"><div class="progress-fill" style="width:96%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Innovation</span><span style="color:var(--ix-accent);font-weight:700">18/20</span></div><div class="progress-bar"><div class="progress-fill violet" style="width:90%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Feasibility</span><span style="color:var(--ix-accent);font-weight:700">16/20</span></div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Impact</span><span style="color:var(--ix-accent);font-weight:700">14/15</span></div><div class="progress-bar"><div class="progress-fill green" style="width:93%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Scalability</span><span style="color:var(--ix-accent);font-weight:700">8/10</span></div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">Cost Efficiency</span><span style="color:var(--ix-accent);font-weight:700">7/10</span></div><div class="progress-bar"><div class="progress-fill violet" style="width:70%"></div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:var(--fs-lg);font-weight:800;margin-bottom:var(--sp-4)">Category Performance</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
+              <div style="display:flex;align-items:center;gap:var(--sp-3)"><span style="font-size:20px">🌾</span><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px"><span>Agriculture</span><span>4 solutions</span></div><div class="progress-bar"><div class="progress-fill green" style="width:80%"></div></div></div></div>
+              <div style="display:flex;align-items:center;gap:var(--sp-3)"><span style="font-size:20px">🏥</span><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px"><span>Healthcare</span><span>3 solutions</span></div><div class="progress-bar"><div class="progress-fill violet" style="width:60%"></div></div></div></div>
+              <div style="display:flex;align-items:center;gap:var(--sp-3)"><span style="font-size:20px">⚡</span><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px"><span>Energy</span><span>3 solutions</span></div><div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div></div></div>
+              <div style="display:flex;align-items:center;gap:var(--sp-3)"><span style="font-size:20px">🏙️</span><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px"><span>Smart Cities</span><span>2 solutions</span></div><div class="progress-bar"><div class="progress-fill cyan" style="width:40%"></div></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-disclaimer" style="text-align:center">DEMO DATA — Analytics are for demonstration purposes only. Real data populates when connected to production backend.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id)?.classList.add('active');
+      btn.classList.add('active');
+    }
+    window.addEventListener('scroll', () => { document.getElementById('mainNav')?.classList.toggle('scrolled', window.scrollY > 20); });
+    document.getElementById('navHamburger')?.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('navHamburger').classList.toggle('open');
+    });
+    const ro = new IntersectionObserver(entries => { entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);} }); }, {threshold:0.08});
+    document.querySelectorAll('.anim-fade-up').forEach(el => ro.observe(el));
+    // Progress bars animate in
+    setTimeout(() => {
+      document.querySelectorAll('.progress-fill').forEach(bar => {
+        const w = bar.style.width; bar.style.width = '0'; setTimeout(() => bar.style.width = w, 100);
+      });
+    }, 300);
+  </script>
+  <script src="js/askix.js"></script>
+
+<script>
+(function(){
+  const user=typeof ixCurrentUser==='function'?ixCurrentUser():null;
+  if(!user) return;
+  const role=user.role;
+  const title=document.querySelector('.dash-hero h1');
+  const desc=document.querySelector('.dash-hero p');
+  const cta=document.querySelector('.dash-hero a.btn');
+  const roleText={
+    startup:{title:'Your Startup Workspace',desc:'Track your submitted solutions, AI feedback, collaboration opportunities and pilots.',cta:'Solution Analysis →'},
+    organization:{title:'Your Challenge Workspace',desc:'Manage challenges, review solutions, coordinate pilots and move validated ideas toward procurement.',cta:'Review Solutions →'},
+    expert:{title:'Your Expert Workspace',desc:'Review AI evidence, record your expert judgement and make clear next-step decisions.',cta:'Open Expert Review →'},
+    admin:{title:'Platform Operations',desc:'Monitor the InnovateX pipeline, verification, reviews and procurement activity.',cta:'Review Platform →'}
+  }[role];
+  if(roleText){
+    if(title) title.textContent=roleText.title;
+    if(desc) desc.innerHTML=`<strong style="color:rgba(255,255,255,0.8)">${roleText.desc}</strong>`;
+    if(cta){cta.textContent=roleText.cta; cta.href=role==='startup'?'ai-analysis.html':role==='expert'?'expert-review.html':role==='admin'?'startup-verification.html':'ai-analysis.html';}
+  }
+  const tabBar=document.getElementById('dashTabs');
+  if(role==='expert'){
+    document.querySelectorAll('#dashTabs .dash-tab').forEach((b,i)=>{if(i>0)b.style.display='none'});
+    document.querySelectorAll('#tab-overview .stat-card').forEach((el,i)=>{if(i!==1 && i!==2 && i!==4)el.style.display='none'});
+    document.querySelectorAll('.insight-card, .attention-item').forEach(el=>el.style.display='none');
+  }
+  if(role==='organization'){
+    const tabs=document.querySelectorAll('#dashTabs .dash-tab');
+    tabs.forEach((b,i)=>{if(i===1)b.textContent='Challenges'; if(i===2)b.textContent='Active Pilots';});
+    document.querySelectorAll('#tab-overview .stat-card').forEach((el,i)=>{if(i===0)el.querySelector('.stat-label').textContent='Open Challenges'; if(i===1)el.querySelector('.stat-label').textContent='Solutions Under Review'; if(i===2)el.querySelector('.stat-label').textContent='Shortlisted'; if(i===3)el.querySelector('.stat-label').textContent='Collaboration Matches';});
+    document.querySelectorAll('h3').forEach(h=>{if(h.textContent.includes('Startup Trust & Verification')) h.closest('.card')?.remove()});
+  }
+})();
+</script>
+</body>
+</html>
