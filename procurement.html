@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Procurement & Scale — InnovateX</title>
+  <meta name="description" content="InnovateX prototype workflow from validated pilot evidence to procurement readiness and scale-up."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+    .proc-hero{background:linear-gradient(135deg,#07142d 0%,#102b5c 58%,#183d78 100%);color:#fff;padding:56px 0 48px;position:relative;overflow:hidden}
+    .proc-hero:before{content:'';position:absolute;width:520px;height:520px;border-radius:50%;right:-180px;top:-260px;background:radial-gradient(circle,rgba(96,165,250,.24),transparent 68%)}
+    .proc-hero-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:32px;align-items:center;position:relative;z-index:1}
+    .proc-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#93c5fd;margin-bottom:12px}
+    .proc-title{font-family:var(--font-heading);font-size:clamp(2rem,4vw,3.2rem);font-weight:900;line-height:1.05;margin:0 0 14px;color:#ffffff}
+    .proc-sub{color:rgba(255,255,255,.68);max-width:690px;line-height:1.7;font-size:15px}
+    .readiness-card{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(16px);border-radius:24px;padding:22px}
+    .readiness-number{font-family:var(--font-heading);font-size:48px;font-weight:900;line-height:1}
+    .readiness-track{height:8px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:14px 0 8px}.readiness-fill{height:100%;width:82%;background:linear-gradient(90deg,#60a5fa,#34d399);border-radius:999px}
+    .workflow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:center;margin:26px 0 36px}.wf-step{position:relative;text-align:center;padding:14px 6px 12px;border:1px solid var(--ix-border);background:var(--ix-surface);border-radius:16px;box-shadow:var(--shadow-sm)}.wf-step.done{border-color:#bbf7d0;background:#f0fdf4}.wf-step.current{border-color:#bfdbfe;background:#eff6ff;box-shadow:0 0 0 3px rgba(37,99,235,.08)}.wf-dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin:0 auto 7px;background:#e2e8f0;font-size:13px;font-weight:900}.wf-step.done .wf-dot{background:#16a34a;color:#fff}.wf-step.current .wf-dot{background:#2563eb;color:#fff}.wf-label{font-size:10.5px;font-weight:800;line-height:1.25}.wf-connector{height:2px;background:#dbeafe}
+    .section-intro{max-width:720px;color:var(--ix-muted);line-height:1.65;font-size:14px}
+    .readiness-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.check-card{display:flex;gap:12px;align-items:flex-start;padding:15px;border:1px solid var(--ix-border);border-radius:16px;background:var(--ix-surface)}.check-icon{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-weight:900;flex:none}.check-card.pending .check-icon{background:#fef3c7;color:#a16207}.check-title{font-size:13px;font-weight:800}.check-meta{font-size:11px;color:var(--ix-muted);margin-top:3px;line-height:1.45}
+    .stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.stage-card{border:1px solid var(--ix-border);border-radius:20px;padding:20px;background:var(--ix-surface);position:relative;overflow:hidden}.stage-card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#2563eb}.stage-card.green:before{background:#16a34a}.stage-card.amber:before{background:#d97706}.stage-card.purple:before{background:#7c3aed}.stage-card h3{font-size:15px;margin:0 0 7px}.stage-card p{font-size:12.5px;color:var(--ix-muted);line-height:1.55;margin:0}.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.mini-badge{font-size:10px;font-weight:800;padding:5px 8px;border-radius:999px;background:var(--ix-surface-2);color:var(--ix-text-2)}
+    .table-wrap{overflow:auto;border:1px solid var(--ix-border);border-radius:18px;background:var(--ix-surface)}.milestone-table{width:100%;border-collapse:collapse;min-width:700px}.milestone-table th,.milestone-table td{padding:13px 15px;text-align:left;border-bottom:1px solid var(--ix-border);font-size:12px}.milestone-table th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ix-muted);background:var(--ix-surface-2)}.milestone-table tr:last-child td{border-bottom:0}.status-done{color:#15803d;font-weight:800}.status-pending{color:#a16207;font-weight:800}
+    .decision-box{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;border-radius:22px;padding:24px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #dbeafe}.decision-options{display:flex;gap:8px;flex-wrap:wrap}.decision-btn{border:1px solid var(--ix-border);background:#fff;border-radius:12px;padding:10px 13px;font-size:11px;font-weight:800;cursor:pointer}.decision-btn:hover{border-color:#93c5fd;background:#eff6ff}.decision-btn.selected{background:#0f172a;color:#fff;border-color:#0f172a}
+    .template-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.template-card{border:1px solid var(--ix-border);border-radius:18px;padding:18px;background:var(--ix-surface);transition:.2s}.template-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:#bfdbfe}.template-icon{font-size:24px;margin-bottom:10px}.template-card h3{font-size:14px;margin:0 0 6px}.template-card p{font-size:11.5px;color:var(--ix-muted);line-height:1.5;margin:0 0 12px}
+    .scale-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.scale-option{border:1px solid var(--ix-border);border-radius:16px;padding:16px;text-align:center;background:var(--ix-surface)}.scale-option.active{border-color:#93c5fd;background:#eff6ff;box-shadow:0 0 0 3px rgba(37,99,235,.07)}.scale-option .big{font-size:23px}.scale-option strong{display:block;font-size:12px;margin-top:5px}.scale-option span{font-size:10px;color:var(--ix-muted)}
+    .integration-strip{display:flex;gap:10px;flex-wrap:wrap}.integration{padding:9px 12px;border-radius:999px;border:1px dashed #cbd5e1;background:#f8fafc;color:#475569;font-size:11px;font-weight:800}
+    @media(max-width:1000px){.workflow{grid-template-columns:repeat(4,1fr)}.wf-connector{display:none}.stage-grid{grid-template-columns:1fr 1fr}.template-grid{grid-template-columns:1fr 1fr}.scale-grid{grid-template-columns:1fr 1fr}.proc-hero-grid{grid-template-columns:1fr}}
+    @media(max-width:650px){.workflow{grid-template-columns:repeat(2,1fr)}.readiness-grid,.stage-grid,.template-grid,.scale-grid{grid-template-columns:1fr}.decision-box{grid-template-columns:1fr}.proc-hero{padding:38px 0}.proc-title{font-size:2rem}}
+  </style>
+</head>
+<body data-page="procurement">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions"><span class="demo-label">📊 Demo</span><div id="authArea" class="auth-area"></div><button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button></div>
+    </div>
+  </nav>
+
+  <section class="proc-hero"><div class="container proc-hero-grid"><div><div class="proc-kicker">Validated evidence → informed procurement</div><h1 class="proc-title" style="color:#ffffff">Procurement & Scale</h1><p class="proc-sub">Turn pilot evidence, expert review, risk checks and validation into a structured procurement-readiness workflow. InnovateX supports the decision — authorized humans make it.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px"><a href="#decision" class="btn btn-primary">Review Decision →</a><a href="#templates" class="btn btn-dark">View Templates</a></div></div><div class="readiness-card"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#bfdbfe;font-weight:800">Current readiness</div><div style="display:flex;align-items:end;gap:7px;margin-top:8px"><div class="readiness-number">82</div><div style="padding-bottom:6px;color:rgba(255,255,255,.55);font-size:12px">/ 100</div></div><div class="readiness-track"><div class="readiness-fill"></div></div><div style="font-size:11px;color:rgba(255,255,255,.58)">Prototype readiness assessment · Human review required</div></div></div></section>
+
+  <main class="page-content"><div class="container" style="padding-top:34px;padding-bottom:80px">
+    <section><div class="section-header"><div><div class="section-label">THE COMPLETE JOURNEY</div><h2>From challenge to scale</h2><p class="section-intro">The workflow makes the SIH mechanism visible: discovery and solution analysis are followed by expert review, real-world evidence, validation and a human procurement decision.</p></div></div>
+      <div class="workflow">
+        <div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Challenge</div></div><div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Startups</div></div><div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Eligibility</div></div><div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Expert Review</div></div><div class="wf-step done"><div class="wf-dot">✓</div><div class="wf-label">Pilot + KPIs</div></div><div class="wf-step current"><div class="wf-dot">6</div><div class="wf-label">Validation</div></div><div class="wf-step"><div class="wf-dot">7</div><div class="wf-label">Procure + Scale</div></div>
+      </div>
+    </section>
+
+    <section class="mb-8"><div class="section-header"><div><div class="section-label">READINESS GATE</div><h2>Procurement readiness</h2><p class="section-intro">Each gate checks whether the evidence needed for a responsible procurement conversation is present.</p></div><span class="badge badge-blue">82% ready</span></div>
+      <div class="readiness-grid">
+        <div class="check-card"><div class="check-icon">✓</div><div><div class="check-title">Challenge alignment</div><div class="check-meta">Pilot objective maps to the original problem statement and expected outcome.</div></div></div>
+        <div class="check-card"><div class="check-icon">✓</div><div><div class="check-title">Startup eligibility</div><div class="check-meta">Eligibility and InnovateX verification are available for review.</div></div></div>
+        <div class="check-card"><div class="check-icon">✓</div><div><div class="check-title">AI + expert evaluation</div><div class="check-meta">Pre-pilot intelligence is supplemented by human domain review.</div></div></div>
+        <div class="check-card"><div class="check-icon">✓</div><div><div class="check-title">Pilot KPI evidence</div><div class="check-meta">Target-versus-actual pilot metrics are available.</div></div></div>
+        <div class="check-card"><div class="check-icon">✓</div><div><div class="check-title">Risk assessment</div><div class="check-meta">Technical and operational risks have been identified with mitigation notes.</div></div></div>
+        <div class="check-card pending"><div class="check-icon">!</div><div><div class="check-title">Independent validation</div><div class="check-meta">Prototype status: Under Review. Final validation must happen outside the AI scoring stage.</div></div></div>
+        <div class="check-card pending"><div class="check-icon">!</div><div><div class="check-title">Data / IP review</div><div class="check-meta">Terms need authorized review before a real procurement pathway.</div></div></div>
+        <div class="check-card pending"><div class="check-icon">!</div><div><div class="check-title">Cybersecurity review</div><div class="check-meta">Security requirements are captured as a checklist, not a certification.</div></div></div>
+      </div>
+    </section>
+
+    <section id="validation" class="mb-8"><div class="section-header"><div><div class="section-label">HUMAN-IN-THE-LOOP</div><h2>Expert evaluation & validation</h2><p class="section-intro">AI prediction is not evidence. Expert review and pilot results add human judgment and real-world validation before a procurement decision.</p></div></div>
+      <div class="stage-grid">
+        <div class="stage-card"><div class="badge badge-purple mb-3">01 · Expert review</div><h3>Review the AI assessment</h3><p>Check technical feasibility, implementation risk, domain suitability, cybersecurity and pilot readiness.</p><div class="badge-row"><span class="mini-badge">Technical fit</span><span class="mini-badge">Domain fit</span><span class="mini-badge">Risk</span></div></div>
+        <div class="stage-card green"><div class="badge badge-green mb-3">02 · Pilot evidence</div><h3>Compare target vs actual</h3><p>Use measurable KPIs, milestones and observed performance to determine whether the solution delivered its claims.</p><div class="badge-row"><span class="mini-badge">28% energy reduction</span><span class="mini-badge">99.7% uptime</span></div></div>
+        <div class="stage-card amber"><div class="badge badge-amber mb-3">03 · Independent validation</div><h3>Validate the evidence</h3><p>Prototype status is currently Under Review. Independent validation is a separate gate before procurement readiness.</p><div class="badge-row"><span class="mini-badge">Under Review</span><span class="mini-badge">Human review</span></div></div>
+      </div>
+    </section>
+
+    <section class="mb-8"><div class="section-header"><div><div class="section-label">SAFEGUARDS</div><h2>Data, IP, cybersecurity & risk</h2></div></div>
+      <div class="stage-grid">
+        <div class="stage-card"><h3>🔐 Data handling</h3><p>Record what data the pilot requires, who can access it and how it is handled. Final terms require authorized review.</p><div class="badge-row"><span class="mini-badge">Access: Review</span><span class="mini-badge">Retention: Pending</span></div></div>
+        <div class="stage-card purple"><h3>©️ IP & licensing</h3><p>Capture ownership and licensing considerations before any real contract. InnovateX does not assign IP automatically.</p><div class="badge-row"><span class="mini-badge">Ownership: Pending</span><span class="mini-badge">License: Review</span></div></div>
+        <div class="stage-card amber"><h3>🛡️ Cybersecurity</h3><p>Track security review status, integration risks and unresolved security requirements as procurement-readiness gates.</p><div class="badge-row"><span class="mini-badge">Security review</span><span class="mini-badge">Needs attention</span></div></div>
+      </div>
+    </section>
+
+    <section class="mb-8"><div class="section-header"><div><div class="section-label">MILESTONES</div><h2>Milestone & payment tracking</h2><p class="section-intro">A prototype tracker for milestone-based contracting. It does not process real government payments.</p></div><span class="badge badge-amber">Prototype only</span></div>
+      <div class="table-wrap"><table class="milestone-table"><thead><tr><th>Milestone</th><th>Evidence</th><th>Amount</th><th>Status</th><th>Next gate</th></tr></thead><tbody>
+        <tr><td><strong>Prototype delivery</strong></td><td>Working solution + technical review</td><td>₹3,50,000</td><td class="status-done">✓ Completed</td><td>Controlled pilot</td></tr>
+        <tr><td><strong>Pilot deployment</strong></td><td>Deployment + baseline measurement</td><td>₹2,50,000</td><td class="status-done">✓ Completed</td><td>KPI monitoring</td></tr>
+        <tr><td><strong>Performance validation</strong></td><td>Target vs actual KPI evidence</td><td>₹1,80,000</td><td class="status-pending">● Pending</td><td>Independent validation</td></tr>
+        <tr><td><strong>Scale deployment</strong></td><td>Validated procurement pathway</td><td>₹2,00,000</td><td class="status-pending">● Pending</td><td>Human approval</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section id="decision" class="mb-8"><div class="section-header"><div><div class="section-label">FINAL GATE</div><h2>Human procurement decision</h2><p class="section-intro">InnovateX can summarize evidence and recommendations. The authorized department remains responsible for the final decision.</p></div></div>
+      <div class="decision-box"><div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:#2563eb">Evidence summary</div><h3 style="margin:6px 0;font-size:18px">EcoGrid Smart Energy — Industrial Pilot</h3><p style="margin:0;color:var(--ix-muted);font-size:12.5px;line-height:1.6">AI prediction: <strong>89/100</strong> · Pilot performance: <strong>88/100</strong> · Energy reduction: <strong>28% vs 20% target</strong> · Uptime: <strong>99.7%</strong>. Independent validation is still required before a real procurement decision.</p></div><div><div style="font-size:10px;font-weight:800;color:var(--ix-muted);margin-bottom:8px;text-align:right">RECORD PROTOTYPE RECOMMENDATION</div><div class="decision-options" data-decision-group><button class="decision-btn" data-decision="Proceed to Procurement">Proceed</button><button class="decision-btn" data-decision="Needs Improvement">Improve</button><button class="decision-btn" data-decision="Retest">Retest</button><button class="decision-btn" data-decision="Reject">Reject</button></div><div id="decisionStatus" style="font-size:10px;color:var(--ix-muted);margin-top:8px;text-align:right">No decision recorded</div></div></div>
+    </section>
+
+    <section id="scale" class="mb-8"><div class="section-header"><div><div class="section-label">SCALE-UP</div><h2>Potential scale pathway</h2><p class="section-intro">A validated solution can be considered for broader deployment. This prototype does not claim actual statewide deployment.</p></div></div>
+      <div class="scale-grid"><div class="scale-option active"><div class="big">🏢</div><strong>Department</strong><span>Expand within one department</span></div><div class="scale-option"><div class="big">📍</div><strong>District</strong><span>Replicate across a district</span></div><div class="scale-option"><div class="big">🏛️</div><strong>Multiple Departments</strong><span>Reuse across departments</span></div><div class="scale-option"><div class="big">🌐</div><strong>State-wide</strong><span>Potential large-scale rollout</span></div></div>
+    </section>
+
+    <section id="templates" class="mb-8"><div class="section-header"><div><div class="section-label">STANDARD TEMPLATES</div><h2>Reusable procurement templates</h2><p class="section-intro">Structured demo templates make the mechanism repeatable. They are not legal contracts.</p></div></div>
+      <div class="template-grid">
+        <div class="template-card"><div class="template-icon">🧩</div><h3>Problem Statement</h3><p>Problem, target users, constraints, budget, expected outcome and measurable success criteria.</p><button class="btn btn-outline btn-sm template-btn" data-template="Problem Statement">Preview</button></div>
+        <div class="template-card"><div class="template-icon">📐</div><h3>Evaluation Criteria</h3><p>Criteria, weights, descriptions and evidence required for consistent solution review.</p><button class="btn btn-outline btn-sm template-btn" data-template="Evaluation Criteria">Preview</button></div>
+        <div class="template-card"><div class="template-icon">🧪</div><h3>Pilot Agreement</h3><p>Objective, scope, duration, KPIs, milestones, data/IP, cybersecurity and risk fields.</p><button class="btn btn-outline btn-sm template-btn" data-template="Pilot Agreement">Preview</button></div>
+        <div class="template-card"><div class="template-icon">🛒</div><h3>Procurement Pathway</h3><p>Evidence, validation, readiness, recommended route, milestones and scale potential.</p><button class="btn btn-outline btn-sm template-btn" data-template="Procurement Pathway">Preview</button></div>
+      </div>
+    </section>
+
+    <section><div class="card" style="background:linear-gradient(135deg,#f8fafc,#eff6ff);border-color:#dbeafe"><div class="section-label">INTEGRATION READY</div><h2 style="font-size:20px;margin-bottom:7px">Future ecosystem connections</h2><p class="section-intro" style="margin-bottom:14px">These are integration points, not live integrations in this prototype.</p><div class="integration-strip"><span class="integration">Recognised Startup Databases</span><span class="integration">Government e-Marketplaces</span><span class="integration">Department Systems</span><span class="integration">Verification Services</span></div></div></section>
+  </div></main>
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script><script src="js/app.js"></script><script src="js/askix.js"></script>
+  <script>
+    document.querySelectorAll('.decision-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.decision-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const status = document.getElementById('decisionStatus');
+      const value = btn.dataset.decision;
+      localStorage.setItem('ix_prototype_decision', value);
+      if (status) status.textContent = 'Recorded: ' + value + ' · Human authorization required';
+      if (typeof showToast === 'function') showToast('Prototype recommendation recorded: ' + value, 'success', 2500);
+    }));
+    document.querySelectorAll('.scale-option').forEach(option => option.addEventListener('click', () => {
+      document.querySelectorAll('.scale-option').forEach(o => o.classList.remove('active'));
+      option.classList.add('active');
+    }));
+    document.querySelectorAll('.template-btn').forEach(btn => btn.addEventListener('click', () => {
+      const templates = {
+        'Problem Statement':'Title · Department · Current situation · Target users · Constraints · Budget · Timeline · Expected outcome · Success metrics',
+        'Evaluation Criteria':'Criterion · Weight · Description · Evidence required · Expert notes',
+        'Pilot Agreement':'Objective · Scope · Duration · Users · KPIs · Milestones · Data · IP · Cybersecurity · Risks',
+        'Procurement Pathway':'Pilot evidence · Validation · Readiness · Recommended route · Milestones · Scale potential'
+      };
+      if (typeof showToast === 'function') showToast(btn.dataset.template + ': ' + templates[btn.dataset.template], 'info', 5000);
+    }));
+    const saved = localStorage.getItem('ix_prototype_decision');
+    if (saved) { const b = document.querySelector(`.decision-btn[data-decision="${CSS.escape(saved)}"]`); if (b) { b.classList.add('selected'); document.getElementById('decisionStatus').textContent = 'Recorded: ' + saved + ' · Human authorization required'; } }
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>My Profile — InnovateX</title><link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/></head>
+<body data-page="profile">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+<nav class="navbar" id="mainNav"><div class="nav-inner"><a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a><div class="nav-actions"><div id="authArea" class="auth-area"></div></div></div></nav>
+<div class="page-content"><div class="container" style="padding-top:var(--sp-8);padding-bottom:var(--sp-16)"><div class="page-header"><div><div class="section-label">ACCOUNT</div><h1 style="font-size:var(--fs-2xl)">My Profile</h1><p>Your account details, role permissions and submitted solutions.</p></div></div><div id="profileContent"></div></div></div><div class="toast-container"></div>
+<script src="js/data.js"></script><script src="js/app.js"></script><script>
+document.addEventListener('DOMContentLoaded',()=>{const u=ixCurrentUser();if(!u)return;const role=IX.roles[u.role];const all=JSON.parse(localStorage.getItem('ix_user_solutions')||'[]');const mine=all.filter(x=>x.ownerId===u.id||x.ownerEmail===u.email);const rolePerm={startup:['Submit solutions','View your posted solutions','View AI analysis for submitted work','Collaborate with solution teams','Track pilots'],organization:['Create and manage problem statements','Review and compare solutions','Run pilots and record decisions','Use AI analysis','Collaborate with solution teams'],admin:['Manage users','Review startup verification','Manage problems and solutions','Monitor pilots and platform analytics']};document.getElementById('profileContent').innerHTML=`<div class="profile-hero"><div class="profile-avatar">${role.icon}</div><div style="flex:1"><h2 style="font-size:var(--fs-xl)">${escapeHtml(u.name)}</h2><div style="font-size:13px;color:var(--text-muted)">${escapeHtml(u.email)}</div><div style="margin-top:8px"><span class="badge badge-blue">${role.icon} ${role.label}</span></div></div><button class="btn btn-outline btn-sm" onclick="localStorage.removeItem('ix_auth_user');location.href='index.html'">Logout</button></div><div class="profile-stat-grid"><div class="profile-stat"><strong>${mine.length}</strong><span>Solutions posted by you</span></div><div class="profile-stat"><strong>${u.role==='startup'?mine.filter(x=>x.aiScore!=='Pending').length:IX.stats.total_solutions}</strong><span>${u.role==='startup'?'Analysed':'Solutions in platform'}</span></div><div class="profile-stat"><strong>${u.role==='startup'?mine.filter(x=>x.status==='Shortlisted').length:IX.stats.active_pilots}</strong><span>${u.role==='startup'?'Shortlisted':'Active pilots'}</span></div></div><div class="grid-2"><div><div class="section-header mb-4"><h3 style="font-size:var(--fs-lg)">💡 Your Posted Solutions</h3><a href="problem.html" class="btn btn-primary btn-sm" data-roles="startup">+ Post Solution</a></div>${mine.length?mine.map(x=>`<div class="profile-solution-card"><div><div style="font-weight:800">${escapeHtml(x.title)}</div><div style="font-size:12px;color:var(--text-muted);margin:4px 0">${escapeHtml(x.problem)} · ${escapeHtml(x.category)}</div><div style="font-size:12px;color:var(--text-secondary)">${escapeHtml(x.desc)}</div></div><div class="badge badge-green">${escapeHtml(x.status)}</div></div>`).join(''):'<div class="card" style="padding:20px;color:var(--text-muted);font-size:13px">You have not posted a solution yet. Go to Problems and submit your first solution.</div>'}</div><div><div class="section-header mb-4"><h3 style="font-size:var(--fs-lg)">🔐 Your Permissions</h3></div><div class="card" style="padding:18px">${rolePerm[u.role].map(x=>`<div style="padding:9px 0;border-bottom:1px solid var(--border-light);font-size:13px">✓ ${escapeHtml(x)}</div>`).join('')}<div class="permission-note">Your role controls which platform actions and pages are available to your account.</div></div></div></div>`;applyRoleVisibility();});
+</script>  <script src="js/askix.js"></script>
+</body></html>
+
+
+

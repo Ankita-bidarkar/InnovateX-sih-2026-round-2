@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>E-Marketplace — InnovateX</title>
+  <meta name="description" content="Discover verified startup solutions, evaluate technical fit, and initiate structured procurement for public and enterprise challenges."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+    .market-hero {
+      background: linear-gradient(135deg, #07142d 0%, #102b5c 58%, #183d78 100%);
+      color: #fff;
+      padding: 56px 0 46px;
+      position: relative;
+      overflow: hidden;
+    }
+    .market-hero::before {
+      content: '';
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      right: -160px;
+      top: -240px;
+      background: radial-gradient(circle, rgba(96,165,250,.22), transparent 70%);
+      pointer-events: none;
+    }
+    .market-hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.6fr;
+      gap: 32px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .market-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: 12px;
+    }
+    .market-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 900;
+      line-height: 1.08;
+      margin: 0 0 12px;
+      color: #ffffff;
+    }
+    .market-sub {
+      color: rgba(255,255,255,.70);
+      max-width: 660px;
+      line-height: 1.65;
+      font-size: 15px;
+      margin: 0;
+    }
+    .market-stat-box {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(14px);
+      border-radius: var(--r-2xl);
+      padding: 22px;
+    }
+    .m-stat-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .m-stat-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .m-stat-row span {
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+    }
+    .m-stat-row strong {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      color: #fff;
+    }
+
+    /* Modal styling */
+    .ix-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 16, 31, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-4);
+    }
+    .ix-modal-backdrop.open {
+      display: flex;
+    }
+    .ix-modal-card {
+      background: var(--ix-surface);
+      border: 1px solid var(--ix-border);
+      border-radius: var(--r-2xl);
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(7, 16, 31, 0.25);
+      padding: var(--sp-8);
+      position: relative;
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--ix-border);
+      background: var(--ix-surface-2);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ix-muted);
+      cursor: pointer;
+    }
+    .modal-close-btn:hover {
+      background: var(--blue-50);
+      color: var(--ix-text);
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ix-text);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--ix-border);
+      border-radius: var(--r-lg);
+      font-size: 13.5px;
+      background: #fff;
+      color: var(--ix-text);
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--ix-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    @media(max-width: 860px) {
+      .market-hero-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="marketplace">
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <span class="demo-label">📊 Demo Mode</span>
+        <div id="authArea" class="auth-area"></div>
+        <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Header -->
+  <section class="market-hero">
+    <div class="method-container market-hero-grid">
+      <div>
+        <div class="market-kicker">Enterprise &amp; Public Sector Discovery</div>
+        <h1 class="market-title" style="color:#ffffff">InnovateX E-Marketplace</h1>
+        <p class="market-sub">
+          Discover verified startup solutions, evaluate architectural alignment, and initiate structured public procurement requests tied directly to transparent milestone disbursals.
+        </p>
+      </div>
+      <div class="market-stat-box">
+        <div class="m-stat-row">
+          <span>Active Solutions</span>
+          <strong>12 Pre-Screened</strong>
+        </div>
+        <div class="m-stat-row">
+          <span>Verification Framework</span>
+          <strong>DPIIT &middot; SIH Certified</strong>
+        </div>
+        <div class="m-stat-row">
+          <span>Payment Protection</span>
+          <strong>Milestone Escrow &middot; PFMS</strong>
+        </div>
+        <div class="m-stat-row">
+          <span>Procurement Pathway</span>
+          <strong>Direct Human Gate Review</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Marketplace Main Content -->
+  <main class="page-content">
+    <div class="method-container" style="padding-top: 36px; padding-bottom: 80px;">
+
+      <!-- Search Bar -->
+      <div class="marketplace-header-bar">
+        <div class="search-input-wrap">
+          <svg class="ix-icon search-input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="marketplaceSearch" placeholder="Search solutions, products or startups..." />
+        </div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--ix-muted); white-space: nowrap;" id="solutionCounter">
+          Showing 12 solutions
+        </div>
+      </div>
+
+      <!-- Category Filter Bar -->
+      <div class="category-filter-bar" id="categoryChips">
+        <button class="cat-chip active" data-category="all">All Solutions</button>
+        <button class="cat-chip" data-category="Healthcare">Healthcare</button>
+        <button class="cat-chip" data-category="Agriculture">Agriculture</button>
+        <button class="cat-chip" data-category="Education">Education</button>
+        <button class="cat-chip" data-category="Technology">Technology</button>
+        <button class="cat-chip" data-category="Sustainability">Sustainability</button>
+        <button class="cat-chip" data-category="FinTech">FinTech</button>
+        <button class="cat-chip" data-category="Other">Other</button>
+      </div>
+
+      <!-- Solutions Grid -->
+      <div class="marketplace-grid" id="solutionsGrid">
+        <!-- Card 1 -->
+        <div class="marketplace-card" data-category="Agriculture" data-keywords="agrinova smart irrigation soil telemetry lora iot">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>AgriNova Technologies</strong>
+              <span>Pune, Maharashtra</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">Smart Irrigation &amp; Soil Telemetry</div>
+          <p class="mcard-desc">LoRa-mesh soil moisture sensor array with automated solar solenoid valves, cutting water and energy usage by 35% without cellular reliance.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-green">Agriculture</span>
+            <span class="chip">IoT Mesh &amp; Edge</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>91 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹2,50,000</strong></div>
+            <div><span>Deploy Time</span><strong>14 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-1" data-name="AgriNova Technologies" data-title="Smart Irrigation & Soil Telemetry" data-cat="Agriculture" data-score="91" data-type="IoT Mesh & Edge Computing" data-desc="LoRa-mesh soil moisture sensor array with automated solar solenoid valves, cutting water and energy usage by 35% without cellular reliance." data-spec="Field hardware uses ultra-low power LoRaWAN (868MHz). Battery life rated for 3 years in outdoor conditions. Ingests soil nitrogen, moisture, ambient temp and connects to public irrigation dispatchers.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-1" data-startup="AgriNova Technologies" data-title="Smart Irrigation & Soil Telemetry" data-est="₹2,50,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="marketplace-card" data-category="Agriculture" data-keywords="cropsense ai plant disease diagnosis vision mobile offline">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>CropSense AI</strong>
+              <span>New Delhi</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">On-Device Plant Disease Diagnosis</div>
+          <p class="mcard-desc">Edge computer vision model running on low-cost smartphones to detect 48 crop pathogens in 1.2 seconds completely offline.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-green">Agriculture</span>
+            <span class="chip">Computer Vision SDK</span>
+            <span class="chip">Pilot Validated</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>93 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹3,50,000</strong></div>
+            <div><span>Deploy Time</span><strong>Immediate</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-2" data-name="CropSense AI" data-title="On-Device Plant Disease Diagnosis" data-cat="Agriculture" data-score="93" data-type="Computer Vision Mobile SDK" data-desc="Edge computer vision model running on low-cost smartphones to detect 48 crop pathogens in 1.2 seconds completely offline." data-spec="Quantized MobileNetV3 neural model under 8MB size. Runs natively on Android 8+ without network coverage. Includes vernacular voice instructions in 12 regional languages.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-2" data-startup="CropSense AI" data-title="On-Device Plant Disease Diagnosis" data-est="₹3,50,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="marketplace-card" data-category="Agriculture" data-keywords="farmvision satellite remote sensing crop canopy vegetation">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>FarmVision</strong>
+              <span>Hyderabad, Telangana</span>
+            </div>
+            <span class="badge badge-blue">✓ Verified Startup</span>
+          </div>
+          <div class="mcard-title">Satellite Field &amp; Canopy Analytics</div>
+          <p class="mcard-desc">Multi-spectral satellite imagery processing delivering 10m-resolution NDVI vegetation health, soil moisture indices, and yield forecasting.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-green">Agriculture</span>
+            <span class="chip">Remote Sensing SaaS</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>87 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹1,80,000</strong></div>
+            <div><span>Deploy Time</span><strong>7 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-3" data-name="FarmVision" data-title="Satellite Field & Canopy Analytics" data-cat="Agriculture" data-score="87" data-type="Remote Sensing Platform" data-desc="Multi-spectral satellite imagery processing delivering 10m-resolution NDVI vegetation health, soil moisture indices, and yield forecasting." data-spec="Integrates Sentinel-2 and Landsat-8 open satellite feeds with proprietary cloud-removal algorithms. Yield predictions correlate at 89% with crop cutting experiments.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-3" data-startup="FarmVision" data-title="Satellite Field & Canopy Analytics" data-est="₹1,80,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="marketplace-card" data-category="Healthcare" data-keywords="sepsissense icu clinical sepsis early warning ai medical">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>SepsisSense AI</strong>
+              <span>New Delhi</span>
+            </div>
+            <span class="badge badge-purple">✓ CDSCO Trial</span>
+          </div>
+          <div class="mcard-title">Edge ICU Sepsis Early Warning</div>
+          <p class="mcard-desc">Continuous ICU vital telemetry monitoring system predicting onset of septic shock 6 hours prior to clinical symptoms in rural hospitals.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-rose">Healthcare</span>
+            <span class="chip">Clinical AI Decision</span>
+            <span class="chip">Hospital Pilot</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>94 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹4,20,000</strong></div>
+            <div><span>Deploy Time</span><strong>21 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-4" data-name="SepsisSense AI" data-title="Edge ICU Sepsis Early Warning" data-cat="Healthcare" data-score="94" data-type="Clinical Decision Support AI" data-desc="Continuous ICU vital telemetry monitoring system predicting onset of septic shock 6 hours prior to clinical symptoms in rural hospitals." data-spec="Trained on 45,000 anonymized ICU admissions. Employs temporal convolutional networks running on an on-prem edge node to guarantee zero patient data egress.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-4" data-startup="SepsisSense AI" data-title="Edge ICU Sepsis Early Warning" data-est="₹4,20,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="marketplace-card" data-category="Healthcare" data-keywords="biowatch portable diagnostics blood rapid rural clinic">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>BioWatch Portable</strong>
+              <span>Bengaluru, Karnataka</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">Rapid Point-of-Care Diagnostics</div>
+          <p class="mcard-desc">Handheld microfluidic analyzer capable of conducting 12 routine blood chemistry and infectious disease panels in under 15 minutes.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-rose">Healthcare</span>
+            <span class="chip">Microfluidic Kit</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>86 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹2,80,000</strong></div>
+            <div><span>Deploy Time</span><strong>10 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-5" data-name="BioWatch Portable" data-title="Rapid Point-of-Care Diagnostics" data-cat="Healthcare" data-score="86" data-type="Microfluidic Hardware" data-desc="Handheld microfluidic analyzer capable of conducting 12 routine blood chemistry and infectious disease panels in under 15 minutes." data-spec="Rechargeable battery powered (8 hours continuous). Discardable low-cost test cartridges. Encrypted Bluetooth sync to district health portals.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-5" data-startup="BioWatch Portable" data-title="Rapid Point-of-Care Diagnostics" data-est="₹2,80,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="marketplace-card" data-category="Sustainability" data-keywords="ecogrid smart energy industrial energy rl hvac clean tech">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>EcoGrid Smart Energy</strong>
+              <span>Surat, Gujarat</span>
+            </div>
+            <span class="badge badge-green">✓ BEE Verified</span>
+          </div>
+          <div class="mcard-title">Industrial Energy Optimization</div>
+          <p class="mcard-desc">Autonomous reinforcement learning controller tuning heavy factory HVAC and compressor circuits to trim electricity consumption by 28%.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-teal">Sustainability</span>
+            <span class="chip">CleanTech RL</span>
+            <span class="chip">Pilot Validated</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>89 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹3,00,000</strong></div>
+            <div><span>Deploy Time</span><strong>14 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-6" data-name="EcoGrid Smart Energy" data-title="Industrial Energy Optimization" data-cat="Sustainability" data-score="89" data-type="CleanTech IoT & AI SaaS" data-desc="Autonomous reinforcement learning controller tuning heavy factory HVAC and compressor circuits to trim electricity consumption by 28%." data-spec="Modbus and BACnet IP gateway integration. Reinforcement learning model trains on 2 weeks of factory shift data and predicts peak tariff windows.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-6" data-startup="EcoGrid Smart Energy" data-title="Industrial Energy Optimization" data-est="₹3,00,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="marketplace-card" data-category="Sustainability" data-keywords="greenloop waste segregation optical recycling municipal">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>GreenLoop Systems</strong>
+              <span>Mumbai, Maharashtra</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">Automated Waste Segregation</div>
+          <p class="mcard-desc">High-speed optical conveyor vision system classifying municipal recyclable waste into 6 distinct categories at 92% sorting accuracy.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-teal">Sustainability</span>
+            <span class="chip">Optical Robotics</span>
+            <span class="chip">Urban Sandbox</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>84 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹4,50,000</strong></div>
+            <div><span>Deploy Time</span><strong>30 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-7" data-name="GreenLoop Systems" data-title="Automated Waste Segregation" data-cat="Sustainability" data-score="84" data-type="Optical Sorting Robotics" data-desc="High-speed optical conveyor vision system classifying municipal recyclable waste into 6 distinct categories at 92% sorting accuracy." data-spec="Pneumatic nozzle ejection sorting at 120 items per minute. Real-time tonnage breakdown transmitted to municipality solid waste monitoring dashboard.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-7" data-startup="GreenLoop Systems" data-title="Automated Waste Segregation" data-est="₹4,50,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="marketplace-card" data-category="Education" data-keywords="edubridge adaptive learning vernacular nlp rural students">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>EduBridge Platform</strong>
+              <span>New Delhi</span>
+            </div>
+            <span class="badge badge-blue">✓ EdTech Sandbox</span>
+          </div>
+          <div class="mcard-title">Vernacular Adaptive Learning</div>
+          <p class="mcard-desc">Low-bandwidth AI tutoring engine delivering personalized STEM curriculum in 12 regional languages with offline synchronization.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-amber">Education</span>
+            <span class="chip">NLP EdTech</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>88 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹1,90,000</strong></div>
+            <div><span>Deploy Time</span><strong>7 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-8" data-name="EduBridge Platform" data-title="Vernacular Adaptive Learning" data-cat="Education" data-score="88" data-type="EdTech NLP Engine" data-desc="Low-bandwidth AI tutoring engine delivering personalized STEM curriculum in 12 regional languages with offline synchronization." data-spec="Compatible with DIKSHA framework standards. Knowledge graph assesses student comprehension gaps and adjusts exercise difficulty in real time.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-8" data-startup="EduBridge Platform" data-title="Vernacular Adaptive Learning" data-est="₹1,90,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 9 -->
+        <div class="marketplace-card" data-category="Technology" data-keywords="civicstack digital identity credential zero knowledge govtech">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>CivicStack Identity</strong>
+              <span>Bhopal, Madhya Pradesh</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">Verifiable Public Identity Stack</div>
+          <p class="mcard-desc">Zero-knowledge identity and credential verification software enabling fraud-free public service and benefit disbursement delivery.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-indigo">Technology</span>
+            <span class="chip">GovTech PKI</span>
+            <span class="chip">Public Testbed</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>83 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹2,20,000</strong></div>
+            <div><span>Deploy Time</span><strong>14 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-9" data-name="CivicStack Identity" data-title="Verifiable Public Identity Stack" data-cat="Technology" data-score="83" data-type="Decentralized PKI / GovTech" data-desc="Zero-knowledge identity and credential verification software enabling fraud-free public service and benefit disbursement delivery." data-spec="W3C Verifiable Credentials compliant. Bridges legacy state resident registries into cryptographic mobile wallets with zero data duplication.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-9" data-startup="CivicStack Identity" data-title="Verifiable Public Identity Stack" data-est="₹2,20,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 10 -->
+        <div class="marketplace-card" data-category="FinTech" data-keywords="fininclusion payments acoustic feature phone offline banking">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>FinInclusion Pay</strong>
+              <span>Mumbai, Maharashtra</span>
+            </div>
+            <span class="badge badge-amber">✓ RBI Sandbox</span>
+          </div>
+          <div class="mcard-title">Soundwave Offline Micro-Payments</div>
+          <p class="mcard-desc">Acoustic encrypted data transmission enabling digital transactions and credit recording on basic feature phones without internet.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-green">FinTech</span>
+            <span class="chip">Acoustic FinTech</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>85 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹2,40,000</strong></div>
+            <div><span>Deploy Time</span><strong>14 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-10" data-name="FinInclusion Pay" data-title="Soundwave Offline Micro-Payments" data-cat="FinTech" data-score="85" data-type="Offline Audio FinTech" data-desc="Acoustic encrypted data transmission enabling digital transactions and credit recording on basic feature phones without internet." data-spec="High-frequency audio pulses transmit encrypted transaction payload within 1 meter. Reconciles seamlessly with UPI 123Pay architecture upon reconnection.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-10" data-startup="FinInclusion Pay" data-title="Soundwave Offline Micro-Payments" data-est="₹2,40,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 11 -->
+        <div class="marketplace-card" data-category="Other" data-keywords="aquasense water pipeline acoustic leakage smart city municipal">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>AquaSense IoT</strong>
+              <span>Ahmedabad, Gujarat</span>
+            </div>
+            <span class="badge badge-cyan">✓ Smart City Sandbox</span>
+          </div>
+          <div class="mcard-title">Urban Water Pipeline Leak Detection</div>
+          <p class="mcard-desc">Non-invasive acoustic sensor clamps detecting underground water pipe fissures and pressure deviations to halt municipal supply loss.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-teal">Other</span>
+            <span class="chip">Municipal IoT</span>
+            <span class="chip">Pilot Ready</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>85 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹2,60,000</strong></div>
+            <div><span>Deploy Time</span><strong>12 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-11" data-name="AquaSense IoT" data-title="Urban Water Pipeline Leak Detection" data-cat="Other" data-score="85" data-type="Acoustic Pipe Sensor Network" data-desc="Non-invasive acoustic sensor clamps detecting underground water pipe fissures and pressure deviations to halt municipal supply loss." data-spec="Solar powered collar clamps install on valve shafts without pipe perforation. Real-time GIS alert feed flags bursts within 5-meter positional accuracy.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-11" data-startup="AquaSense IoT" data-title="Urban Water Pipeline Leak Detection" data-est="₹2,60,000">Request Procurement</button>
+          </div>
+        </div>
+
+        <!-- Card 12 -->
+        <div class="marketplace-card" data-category="Agriculture" data-keywords="voiceagri ivr voice nlp mandi farmer advisory speech">
+          <div class="mcard-top">
+            <div class="mcard-startup-info">
+              <strong>VoiceAgri</strong>
+              <span>Nagpur, Maharashtra</span>
+            </div>
+            <span class="badge badge-blue">✓ DPIIT Verified</span>
+          </div>
+          <div class="mcard-title">Interactive IVR Agronomy Advisor</div>
+          <p class="mcard-desc">Toll-free conversational voice AI agent supporting 14 Indian dialects for personalized crop disease remediation and real-time mandi prices.</p>
+          <div class="mcard-tags">
+            <span class="badge badge-green">Agriculture</span>
+            <span class="chip">Voice AI IVR</span>
+            <span class="chip">Pilot Validated</span>
+          </div>
+          <div class="mcard-meta-row">
+            <div><span>AI Score</span><strong>85 / 100</strong></div>
+            <div><span>Est. Pilot</span><strong>₹1,50,000</strong></div>
+            <div><span>Deploy Time</span><strong>5 Days</strong></div>
+          </div>
+          <div class="mcard-actions">
+            <button class="btn btn-outline btn-sm view-sol-btn" data-id="sol-12" data-name="VoiceAgri" data-title="Interactive IVR Agronomy Advisor" data-cat="Agriculture" data-score="85" data-type="Conversational Voice AI" data-desc="Toll-free conversational voice AI agent supporting 14 Indian dialects for personalized crop disease remediation and real-time mandi prices." data-spec="SIP trunk integration capable of handling 500 concurrent telephony lines. Automatic speech recognition customized for agricultural vocabulary and regional accents.">View Solution</button>
+            <button class="btn btn-primary btn-sm req-proc-btn" data-id="sol-12" data-startup="VoiceAgri" data-title="Interactive IVR Agronomy Advisor" data-est="₹1,50,000">Request Procurement</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Card: Timely Startup Payments on Marketplace -->
+      <section class="card payment-dashboard-card" style="margin-top: 40px; background: linear-gradient(135deg, #fff 0%, #f8fbff 100%);">
+        <div class="payments-grid" style="align-items: center;">
+          <div>
+            <div class="section-label">PAYMENT TRANSPARENCY IN PROCUREMENT</div>
+            <h3 style="font-size: 20px; font-weight: 800; margin-top: 4px;">Timely Startup Payments</h3>
+            <p style="color: var(--ix-muted); font-size: 13.5px; line-height: 1.6; margin: 10px 0 16px;">
+              Track procurement payments from invoice submission to completion, helping startups get paid on time and organisations maintain transparent financial workflows.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12.5px;">
+              <div>✓ Invoice tracking</div>
+              <div>✓ Payment status visibility</div>
+              <div>✓ Due-date reminders</div>
+              <div>✓ Transparent transaction history</div>
+            </div>
+          </div>
+          <div>
+            <div class="payment-flow-tracker" style="margin-bottom: 12px;">
+              <div class="flow-pill done"><span>1</span> Approved</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill done"><span>2</span> Contract</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill done"><span>3</span> Invoice</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill active"><span>4</span> Processing</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill"><span>5</span> Completed</div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background: var(--ix-surface-2); padding: 12px 16px; border-radius: var(--r-lg);">
+              <div>
+                <strong style="font-size: 13px;">AgriNova Technologies &middot; INV-2026-014</strong>
+                <div style="font-size: 11.5px; color: var(--ix-muted);">Smart Irrigation Pilot &middot; Due: 15 Oct 2026</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-weight: 900; font-size: 15px; color: var(--ix-text);">₹2,50,000</div>
+                <span class="badge badge-amber" style="font-size: 10px;">● Processing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- View Solution Modal -->
+  <div class="ix-modal-backdrop" id="viewSolutionModal">
+    <div class="ix-modal-card">
+      <button class="modal-close-btn" id="closeViewModal">&times;</button>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+        <span class="badge badge-blue" id="modalCategoryBadge">Agriculture</span>
+        <span class="badge badge-green" id="modalScoreBadge">AI Score: 91</span>
+      </div>
+      <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 4px;" id="modalSolutionTitle">Solution Title</h3>
+      <div style="font-size: 13px; color: var(--ix-muted); margin-bottom: 16px;" id="modalStartupName">Startup Name</div>
+      
+      <div style="margin-bottom: 16px;">
+        <h4 style="font-size: 12px; text-transform: uppercase; color: var(--ix-muted); letter-spacing: .06em; margin-bottom: 6px;">Solution Summary</h4>
+        <p style="font-size: 13.5px; color: var(--ix-text-2); line-height: 1.6;" id="modalSolutionDesc">Description</p>
+      </div>
+
+      <div style="margin-bottom: 20px; background: var(--ix-surface-2); border-radius: var(--r-lg); padding: 14px;">
+        <h4 style="font-size: 12px; text-transform: uppercase; color: var(--ix-muted); letter-spacing: .06em; margin-bottom: 6px;">Technical Specification</h4>
+        <p style="font-size: 12.5px; color: var(--ix-text-2); line-height: 1.55; margin: 0;" id="modalSolutionSpec">Specs</p>
+      </div>
+
+      <div style="display:flex; gap: 10px; justify-content: flex-end;">
+        <a href="ai-analysis.html" class="btn btn-outline btn-sm">Inspect in AI Review &rarr;</a>
+        <button class="btn btn-primary btn-sm" id="modalProceedProcureBtn">Request Procurement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Procurement Modal -->
+  <div class="ix-modal-backdrop" id="procureModal">
+    <div class="ix-modal-card">
+      <button class="modal-close-btn" id="closeProcureModal">&times;</button>
+      <div class="section-label">STRUCTURED PROCUREMENT INTAKE</div>
+      <h3 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px;" id="procureModalTitle">Request Procurement</h3>
+      <p style="font-size: 13px; color: var(--ix-muted); margin-bottom: 20px;">
+        Initiate a formal procurement interest checkpoint for <strong id="procureStartupTarget">AgriNova Technologies</strong>.
+      </p>
+
+      <form id="procureForm">
+        <div class="form-group">
+          <label>Requesting Organisation / Department</label>
+          <input type="text" id="reqOrgName" placeholder="e.g. Dept of Agriculture, State Innovation Mission" required />
+        </div>
+
+        <div class="form-group">
+          <label>Procurement &amp; Pilot Scope</label>
+          <select id="reqScope">
+            <option value="pilot">Controlled Sandbox Pilot (30-60 Days)</option>
+            <option value="multisite">Multi-District Cluster Validation</option>
+            <option value="direct">Direct Department Procurement</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Estimated Allocation</label>
+          <input type="text" id="reqBudget" value="₹2,50,000" required />
+        </div>
+
+        <div class="form-group">
+          <label>Expected Target Completion Date</label>
+          <input type="date" id="reqDate" value="2026-11-15" required />
+        </div>
+
+        <div class="form-group">
+          <label>Procurement Objectives / Constraints</label>
+          <textarea rows="3" id="reqNotes" placeholder="Describe deployment locations, constraints, or expected KPI benchmarks..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+          <button type="button" class="btn btn-ghost btn-sm" id="cancelProcureBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Submit Procurement Request &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Enterprise Footer -->
+  <footer class="ix-site-footer">
+    <div class="method-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-mark">X</div>
+            <span>Innovate<span class="accent" style="color:var(--ix-accent)">X</span></span>
+          </div>
+          <p>AI-powered startup procurement intelligence, multi-solution collaboration discovery, and evidence-driven pilot governance for modern public institutions.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="problem.html">Problems &amp; Challenges</a></li>
+            <li><a href="marketplace.html">E-Marketplace</a></li>
+            <li><a href="ai-analysis.html">AI Review &amp; Scoring</a></li>
+            <li><a href="collaborate.html">Collaboration Detection</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Workflow</h4>
+          <ul>
+            <li><a href="pilot.html">Pilot Sandbox</a></li>
+            <li><a href="procurement.html">Procurement &amp; Scale</a></li>
+            <li><a href="expert-review.html">Expert Evaluation</a></li>
+            <li><a href="index.html#payments-section">Startup Payments</a></li>
+            <li><a href="startup-verification.html">Startup Verification</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Governance</h4>
+          <ul>
+            <li><span style="color:rgba(255,255,255,0.85);font-weight:700">SIH 2024 Working Prototype</span></li>
+            <li><span style="color:rgba(255,255,255,0.5)">Simulated Treasury &amp; PFMS</span></li>
+            <li><span style="color:rgba(255,255,255,0.5)">Human-in-the-Loop Decisions</span></li>
+            <li><span style="color:rgba(255,255,255,0.5)">DPIIT Framework Compliant</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 InnovateX Platform. Enterprise &amp; Public Sector Startup Procurement Intelligence.</div>
+        <div>Prototype Demonstration Environment &middot; All Rights Reserved</div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Search and Category Filter Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('marketplaceSearch');
+      const categoryChips = document.querySelectorAll('.cat-chip');
+      const cards = document.querySelectorAll('.marketplace-card');
+      const counter = document.getElementById('solutionCounter');
+
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function filterCards() {
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+          const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+          const cardText = card.textContent.toLowerCase();
+
+          const matchesCategory = (currentCategory === 'all') || (cardCategory.toLowerCase() === currentCategory.toLowerCase());
+          const matchesQuery = !currentQuery || cardText.includes(currentQuery) || keywords.includes(currentQuery);
+
+          if (matchesCategory && matchesQuery) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (counter) {
+          counter.textContent = `Showing ${visibleCount} solution${visibleCount === 1 ? '' : 's'}`;
+        }
+      }
+
+      categoryChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          categoryChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentCategory = chip.getAttribute('data-category');
+          filterCards();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = e.target.value.trim().toLowerCase();
+          filterCards();
+        });
+      }
+
+      // View Solution Modal
+      const viewModal = document.getElementById('viewSolutionModal');
+      const closeViewModal = document.getElementById('closeViewModal');
+      let currentSelectedSolution = null;
+
+      document.querySelectorAll('.view-sol-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentSelectedSolution = {
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            title: btn.dataset.title,
+            cat: btn.dataset.cat,
+            score: btn.dataset.score,
+            desc: btn.dataset.desc,
+            spec: btn.dataset.spec,
+          };
+          document.getElementById('modalCategoryBadge').textContent = currentSelectedSolution.cat;
+          document.getElementById('modalScoreBadge').textContent = `AI Score: ${currentSelectedSolution.score}`;
+          document.getElementById('modalSolutionTitle').textContent = currentSelectedSolution.title;
+          document.getElementById('modalStartupName').textContent = currentSelectedSolution.name;
+          document.getElementById('modalSolutionDesc').textContent = currentSelectedSolution.desc;
+          document.getElementById('modalSolutionSpec').textContent = currentSelectedSolution.spec;
+          viewModal.classList.add('open');
+        });
+      });
+
+      if (closeViewModal) {
+        closeViewModal.addEventListener('click', () => viewModal.classList.remove('open'));
+      }
+
+      // Request Procurement Modal
+      const procureModal = document.getElementById('procureModal');
+      const closeProcureModal = document.getElementById('closeProcureModal');
+      const cancelProcureBtn = document.getElementById('cancelProcureBtn');
+      const modalProceedProcureBtn = document.getElementById('modalProceedProcureBtn');
+
+      function openProcureModal(startupName, solutionTitle, estBudget) {
+        document.getElementById('procureStartupTarget').textContent = startupName;
+        document.getElementById('procureModalTitle').textContent = `Procurement Request: ${solutionTitle}`;
+        if (estBudget) document.getElementById('reqBudget').value = estBudget;
+        procureModal.classList.add('open');
+      }
+
+      document.querySelectorAll('.req-proc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openProcureModal(btn.dataset.startup, btn.dataset.title, btn.dataset.est);
+        });
+      });
+
+      if (modalProceedProcureBtn) {
+        modalProceedProcureBtn.addEventListener('click', () => {
+          viewModal.classList.remove('open');
+          if (currentSelectedSolution) {
+            openProcureModal(currentSelectedSolution.name, currentSelectedSolution.title, '₹2,50,000');
+          }
+        });
+      }
+
+      const closeProcure = () => procureModal.classList.remove('open');
+      if (closeProcureModal) closeProcureModal.addEventListener('click', closeProcure);
+      if (cancelProcureBtn) cancelProcureBtn.addEventListener('click', closeProcure);
+
+      // Close modals on backdrop click
+      [viewModal, procureModal].forEach(m => {
+        m?.addEventListener('click', (e) => {
+          if (e.target === m) m.classList.remove('open');
+        });
+      });
+
+      // Handle Procurement Form Submission
+      const procureForm = document.getElementById('procureForm');
+      if (procureForm) {
+        procureForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const target = document.getElementById('procureStartupTarget').textContent;
+          const ref = 'PRQ-2026-' + Math.floor(1000 + Math.random() * 9000);
+          const req = {
+            ref,
+            target,
+            org: document.getElementById('reqOrgName').value,
+            scope: document.getElementById('reqScope').value,
+            budget: document.getElementById('reqBudget').value,
+            date: document.getElementById('reqDate').value,
+            notes: document.getElementById('reqNotes').value,
+            timestamp: new Date().toISOString(),
+            status: 'Submitted'
+          };
+
+          const existing = JSON.parse(localStorage.getItem('ix_procurement_requests') || '[]');
+          existing.unshift(req);
+          localStorage.setItem('ix_procurement_requests', JSON.stringify(existing));
+
+          procureModal.classList.remove('open');
+          showToast(`Procurement request submitted! Reference: ${ref}`, 'success', 5000);
+          procureForm.reset();
+        });
+      }
+
+      // Nav mobile
+      document.getElementById('navHamburger')?.addEventListener('click', () => {
+        const nl = document.getElementById('navLinks');
+        const hb = document.getElementById('navHamburger');
+        nl?.classList.toggle('mobile-open');
+        hb?.classList.toggle('open');
+      });
+
+      // Navbar scroll effect
+      window.addEventListener('scroll', () => {
+        document.getElementById('mainNav')?.classList.toggle('scrolled', window.scrollY > 20);
+      });
+    });
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>

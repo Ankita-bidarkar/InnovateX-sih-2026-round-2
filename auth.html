@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Sign In / Join — InnovateX</title>
+  <meta name="description" content="Sign in or create your InnovateX account to discover challenges, submit solutions and track pilot progress."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+    body { background: var(--ix-bg); }
+    .auth-tab { padding: 9px 22px; border-radius: var(--r-full); font-size: 14px; font-weight: 700; cursor: pointer; transition: all var(--t-fast); border: none; background: transparent; color: var(--ix-muted); }
+    .auth-tab.active { background: var(--ix-text); color: #fff; }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    .divider { display: flex; align-items: center; gap: var(--sp-4); margin: var(--sp-5) 0; color: var(--ix-muted); font-size: 12px; font-weight: 600; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--ix-border); }
+    .social-btn { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); width: 100%; padding: 11px; border: 1.5px solid var(--ix-border); border-radius: var(--r-xl); font-size: 14px; font-weight: 600; color: var(--ix-text); background: var(--ix-surface); cursor: pointer; transition: all var(--t-fast); margin-bottom: var(--sp-2); }
+    .social-btn:hover { border-color: var(--ix-border-2); background: var(--ix-surface-2); box-shadow: var(--shadow-sm); }
+    /* Visual side */
+    .visual-node { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+    .visual-node .vc { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid rgba(255,255,255,0.2); }
+    .visual-node .vl { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.65); }
+    .visual-metric { position: absolute; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18); border-radius: var(--r-xl); padding: 7px 14px; white-space: nowrap; }
+    .vm-val { font-family: var(--font-heading); font-weight: 900; font-size: 15px; color: #fff; }
+    .vm-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em; color: rgba(255,255,255,0.5); margin-top: 1px; }
+    .journey-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--r-full); font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.75); }
+    @keyframes fy { 0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)} }
+  </style>
+</head>
+<body>
+
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#mainNav" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+        <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+      </a>
+      <div class="nav-actions">
+        <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-grid">
+
+    <!-- ── Visual Side ── -->
+    <div class="auth-visual">
+      <div class="auth-visual-content">
+        <div style="margin-bottom:var(--sp-6)">
+          <div class="journey-pill" style="margin-bottom:var(--sp-4)">✦ AI-Powered Innovation Intelligence</div>
+          <h2 style="font-family:var(--font-heading);font-weight:900;font-size:clamp(1.8rem,3vw,2.6rem);color:#fff;line-height:1.1;margin-bottom:var(--sp-4)">
+            Where challenges<br/>meet solutions.
+          </h2>
+          <p style="color:rgba(255,255,255,0.55);font-size:var(--fs-base);line-height:1.65">
+            Join 189 startups and 38 organisations using InnovateX to transform real-world challenges into evidence-backed solutions.
+          </p>
+        </div>
+
+        <!-- Floating innovation network -->
+        <div style="position:relative;height:240px;margin-bottom:var(--sp-6)">
+          <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 240" fill="none">
+            <line x1="200" y1="120" x2="80"  y2="50"  stroke="rgba(96,165,250,0.4)" stroke-width="1.5" stroke-dasharray="5 4"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="2s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="120" x2="320" y2="50"  stroke="rgba(167,139,250,0.4)" stroke-width="1.5" stroke-dasharray="5 4"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="2.5s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="120" x2="60"  y2="190" stroke="rgba(34,211,238,0.4)"  stroke-width="1.5" stroke-dasharray="5 4"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.9s" repeatCount="indefinite"/></line>
+            <line x1="200" y1="120" x2="340" y2="190" stroke="rgba(74,222,128,0.4)"  stroke-width="1.5" stroke-dasharray="5 4"><animate attributeName="stroke-dashoffset" from="0" to="-18" dur="2.2s" repeatCount="indefinite"/></line>
+          </svg>
+          <!-- Centre node -->
+          <div class="visual-node" style="top:50%;left:50%;transform:translate(-50%,-50%);animation:fy 4.5s ease-in-out infinite">
+            <div class="vc" style="width:60px;height:60px;font-size:24px;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.3)">📋</div>
+            <div class="vl">Challenge</div>
+          </div>
+          <!-- Other nodes -->
+          <div class="visual-node" style="top:10%;left:13%;animation:fy 4s ease-in-out infinite 0.3s"><div class="vc" style="background:linear-gradient(135deg,#2563EB,#1D4ED8)">💡</div><div class="vl">Startup A</div></div>
+          <div class="visual-node" style="top:10%;right:13%;animation:fy 3.8s ease-in-out infinite 0.8s"><div class="vc" style="background:linear-gradient(135deg,#7C3AED,#6D28D9)">🚀</div><div class="vl">Startup B</div></div>
+          <div class="visual-node" style="bottom:8%;left:10%;animation:fy 4.2s ease-in-out infinite 0.5s"><div class="vc" style="background:linear-gradient(135deg,#06B6D4,#0891B2)">⚡</div><div class="vl">AI Score</div></div>
+          <div class="visual-node" style="bottom:8%;right:10%;animation:fy 3.6s ease-in-out infinite 1.2s"><div class="vc" style="background:linear-gradient(135deg,#16A34A,#059669)">✅</div><div class="vl">Pilot</div></div>
+          <!-- Metrics -->
+          <div class="visual-metric" style="top:35%;right:0;animation:fy 3.5s ease-in-out infinite"><div class="vm-val">87</div><div class="vm-lbl">AI Score</div></div>
+          <div class="visual-metric" style="bottom:35%;left:0;animation:fy 4s ease-in-out infinite 1s"><div class="vm-val">78%</div><div class="vm-lbl">Pilot Success</div></div>
+        </div>
+
+        <!-- Stats row -->
+        <div style="display:flex;gap:var(--sp-6);justify-content:center">
+          <div style="text-align:center"><div style="font-family:var(--font-heading);font-weight:900;font-size:var(--fs-2xl);color:#fff">47+</div><div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">Open Challenges</div></div>
+          <div style="text-align:center"><div style="font-family:var(--font-heading);font-weight:900;font-size:var(--fs-2xl);color:#fff">189+</div><div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">Startups</div></div>
+          <div style="text-align:center"><div style="font-family:var(--font-heading);font-weight:900;font-size:var(--fs-2xl);color:#fff">₹2.5Cr</div><div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">Prize Pool</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Form Side ── -->
+    <div class="auth-form-side">
+      <div class="auth-card">
+        <!-- Logo -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:var(--sp-6)">
+          <div class="logo-mark" style="width:42px;height:42px;font-size:20px">X</div>
+          <div>
+            <div style="font-family:var(--font-heading);font-weight:900;font-size:19px;color:var(--ix-text)">Innovate<span style="color:var(--ix-accent)">X</span></div>
+            <div style="font-size:11px;color:var(--ix-muted);font-weight:600">Innovation Intelligence Platform</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display:flex;gap:4px;background:var(--ix-surface-2);border-radius:var(--r-full);padding:4px;margin-bottom:var(--sp-6)">
+          <button class="auth-tab active" id="tab-signin" onclick="switchAuthTab('signin')">Sign In</button>
+          <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+        </div>
+
+        <!-- Sign In Form -->
+        <div class="auth-form active" id="form-signin">
+          <div style="margin-bottom:var(--sp-6)">
+            <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:4px">Welcome back</h2>
+            <p style="color:var(--ix-muted);font-size:13.5px">Sign in to your InnovateX account</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" id="loginPassword" type="password" placeholder="Your password" autocomplete="current-password"/>
+            <div style="text-align:right;margin-top:6px"><a href="#" style="font-size:12.5px;color:var(--ix-accent);font-weight:600">Forgot password?</a></div>
+          </div>
+          <button class="btn btn-primary w-full" style="margin-bottom:var(--sp-4)" id="signinBtn" onclick="handleSignIn()">Sign In →</button>
+          <div class="divider">or continue as</div>
+          <div class="auth-role-grid" style="margin-bottom:var(--sp-4)">
+            <button class="social-btn" onclick="demoLogin('startup')">🚀 Startup Demo</button>
+            <button class="social-btn" onclick="demoLogin('organization')">🏛️ Organisation Demo</button>
+            <button class="social-btn" onclick="demoLogin('expert')">🧑‍⚖️ Expert Demo</button>
+            <button class="social-btn" onclick="demoLogin('admin')">🔑 Admin Demo</button>
+            <button class="social-btn" onclick="demoLogin('guest')">👤 Guest Browse</button>
+          </div>
+          <p style="font-size:12px;color:var(--ix-muted);text-align:center;line-height:1.5">Demo mode: no credentials needed. Use role buttons above to explore as different user types.</p>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="auth-form" id="form-signup">
+          <div style="margin-bottom:var(--sp-6)">
+            <h2 style="font-size:var(--fs-2xl);font-weight:800;margin-bottom:4px">Join InnovateX</h2>
+            <p style="color:var(--ix-muted);font-size:13.5px">Create your account to start exploring challenges</p>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="reg-first" placeholder="Ananya"/></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="reg-last" placeholder="Sharma"/></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" id="reg-email" type="email" placeholder="you@startup.in"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">I am a…</label>
+            <div class="auth-role-grid">
+              <div class="auth-role-option selected" onclick="selectRole(this,'startup')">
+                <strong>🚀 Startup</strong><span>Submit solutions to challenges</span>
+              </div>
+              <div class="auth-role-option" onclick="selectRole(this,'organization')">
+                <strong>🏛️ Organisation</strong><span>Post challenges, review solutions</span>
+              </div>
+              <div class="auth-role-option" onclick="selectRole(this,'expert')">
+                <strong>🧑‍⚖️ Expert Reviewer</strong><span>Review and shortlist solutions</span>
+              </div>
+              <div class="auth-role-option" onclick="selectRole(this,'admin')">
+                <strong>🛡️ Admin</strong><span>Verify startups and manage the platform</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input class="form-input" id="reg-pass" type="password" placeholder="Min. 8 characters"/>
+          </div>
+          <div class="form-group">
+            <label style="display:flex;align-items:flex-start;gap:var(--sp-3);cursor:pointer;font-size:13px;color:var(--ix-text-2)">
+              <input type="checkbox" id="reg-terms" style="margin-top:3px;flex-shrink:0"/>
+              I agree to InnovateX <a href="#" style="color:var(--ix-accent);font-weight:600">Terms of Service</a> and <a href="#" style="color:var(--ix-accent);font-weight:600">Privacy Policy</a>
+            </label>
+          </div>
+          <button class="btn btn-primary w-full" onclick="handleSignUp()">Create Account →</button>
+          <div class="divider">or try demo first</div>
+          <div class="grid-2">
+            <button class="social-btn" onclick="demoLogin('startup')">🚀 Startup Demo</button>
+            <button class="social-btn" onclick="demoLogin('organization')">🏛️ Organisation Demo</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+(() => {
+  'use strict';
+  const AUTH_KEY='ix_auth_user', USERS_KEY='ix_users';
+  const DEMO={
+    startup:{id:'demo-startup',name:'AgriNova Demo',email:'startup@innovatex.demo',password:'demo123',role:'startup',org:'AgriNova'},
+    organization:{id:'demo-org',name:'National Agriculture Innovation Lab',email:'org@innovatex.demo',password:'demo123',role:'organization',org:'National Agriculture Innovation Lab'},
+    expert:{id:'demo-expert',name:'InnovateX Expert',email:'expert@innovatex.demo',password:'demo123',role:'expert',org:'InnovateX Expert Review'},
+    admin:{id:'demo-admin',name:'InnovateX Admin',email:'admin@innovatex.demo',password:'demo123',role:'admin',org:'InnovateX'}
+  };
+  let selectedRole='startup';
+  const users=()=>{try{const x=JSON.parse(localStorage.getItem(USERS_KEY)||'[]');return Array.isArray(x)?x:[]}catch{return[]}};
+  const saveUsers=u=>{try{localStorage.setItem(USERS_KEY,JSON.stringify(u));return true}catch(e){alert('Browser storage is blocked. Please allow site data for localhost and try again.');return false}};
+  const setUser=u=>{try{if(u)localStorage.setItem(AUTH_KEY,JSON.stringify(u));else localStorage.removeItem(AUTH_KEY);return true}catch(e){alert('Could not save your login session. Please allow site data for localhost.');return false}};
+  const toast=(m)=>{if(typeof window.showToast==='function') window.showToast(m,'success',1800); else alert(m)};
+  window.switchAuthTab=(tab)=>{document.querySelectorAll('.auth-form').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));document.getElementById('form-'+tab)?.classList.add('active');document.getElementById('tab-'+tab)?.classList.add('active')};
+  window.selectRole=(el,role)=>{document.querySelectorAll('.auth-role-option').forEach(x=>x.classList.remove('selected'));el?.classList.add('selected');selectedRole=role};
+  window.demoLogin=(role)=>{if(role==='guest'){location.href='index.html';return} const u=DEMO[role]; if(!u)return; const all=users(); if(!all.some(x=>x.email===u.email)) saveUsers([...all,u]); if(!setUser(u))return; toast('Signed in successfully'); const dest={expert:'expert-review.html',admin:'dashboard.html',organization:'dashboard.html',startup:'dashboard.html'}[role]||'dashboard.html'; setTimeout(()=>location.replace(dest),250)};
+  window.handleSignIn=(e)=>{e?.preventDefault(); const email=(document.getElementById('loginEmail')?.value||'').trim().toLowerCase(); const pass=document.getElementById('loginPassword')?.value||''; if(!email||!pass){alert('Please enter your email and password.');return false} const all=[...Object.values(DEMO),...users()]; const u=all.find(x=>String(x.email).toLowerCase()===email&&String(x.password)===pass); if(!u){alert('Incorrect email or password.\n\nDemo accounts:\nstartup@innovatex.demo / demo123\norg@innovatex.demo / demo123\nexpert@innovatex.demo / demo123\nadmin@innovatex.demo / demo123');return false} if(!setUser(u))return false; toast('Signed in successfully'); const dest={expert:'expert-review.html',admin:'dashboard.html',organization:'dashboard.html',startup:'dashboard.html'}[u.role]||'dashboard.html'; setTimeout(()=>location.replace(dest),250); return false};
+  window.handleSignUp=(e)=>{e?.preventDefault(); const first=(document.getElementById('reg-first')?.value||'').trim(),last=(document.getElementById('reg-last')?.value||'').trim(),email=(document.getElementById('reg-email')?.value||'').trim().toLowerCase(),pass=document.getElementById('reg-pass')?.value||'',terms=document.getElementById('reg-terms')?.checked; if(!first||!email||!pass){alert('Please fill in your first name, email and password.');return false} if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('Please enter a valid email address.');return false} if(pass.length<8){alert('Password must be at least 8 characters.');return false} if(!terms){alert('Please agree to the Terms of Service.');return false} const all=users(); if(all.some(x=>x.email===email)||Object.values(DEMO).some(x=>x.email===email)){alert('An account with this email already exists.');return false} const u={id:'user-'+Date.now(),name:[first,last].filter(Boolean).join(' '),email,password:pass,role:selectedRole,org:''}; if(!saveUsers([...all,u])||!setUser(u))return false; toast('Account created successfully');setTimeout(()=>location.replace('dashboard.html'),250);return false};
+  window.addEventListener('DOMContentLoaded',()=>{
+    if(new URLSearchParams(location.search).get('mode')==='register') switchAuthTab('signup');
+    document.getElementById('loginPassword')?.addEventListener('keydown',e=>{if(e.key==='Enter')handleSignIn(e)});
+    document.getElementById('reg-pass')?.addEventListener('keydown',e=>{if(e.key==='Enter')handleSignUp(e)});
+    document.querySelectorAll('.auth-form').forEach(f=>f.addEventListener('submit',e=>e.preventDefault()));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>InnovateX — AI-Powered Startup Procurement Intelligence</title>
+  <meta name="description" content="InnovateX connects real-world challenges with startup solutions through AI scoring, collaboration detection, and evidence-based pilot testing."/>
+  <link rel="stylesheet" href="css/design.css"/>
+  <link rel="stylesheet" href="css/upgrade.css"/>
+  <style>
+/* ── SVG Icon Base ── */
+.ix-icon{width:18px;height:18px;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;flex-shrink:0;display:inline-block;vertical-align:middle;}
+
+/* ── Institutional App Shell & Sidebar ── */
+body[data-page="index"]{overflow-x:clip;}
+.ix-app-shell{display:flex;min-height:calc(100vh - 60px);position:relative;background:var(--ix-bg);}
+.ix-sidebar{width:215px;flex:0 0 215px;position:sticky;top:60px;align-self:flex-start;height:calc(100vh - 60px);background:linear-gradient(180deg,#071526 0%,#0a1c30 60%,#0d233a 100%);border-right:1px solid #16365a;box-shadow:2px 0 8px rgba(7,21,38,0.10);display:flex;flex-direction:column;z-index:90;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.12) transparent;}
+.ix-sidebar-inner{padding:18px 12px;display:flex;flex-direction:column;height:100%;}
+.ix-sidebar-heading{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#8da2be;padding:0 10px;margin-bottom:8px;}
+.ix-sidebar-nav{display:flex;flex-direction:column;gap:3px;}
+.ix-sidebar-link{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:6px;font-family:var(--font-sans);font-size:13.5px;font-weight:600;color:#c7d6e8;text-decoration:none;transition:all 0.16s ease;border-left:3px solid transparent;}
+.ix-sidebar-link span{color:inherit;font-size:13.5px;font-weight:inherit;}
+.ix-sidebar-link .ix-icon{width:18px;height:18px;stroke:#8da2be;transition:all 0.16s ease;flex-shrink:0;}
+.ix-sidebar-link:hover{background:rgba(255,255,255,0.06);color:#ffffff;}
+.ix-sidebar-link:hover .ix-icon{stroke:#93c5fd;}
+.ix-sidebar-link.active{background:#143456;border-left-color:var(--ix-saffron);color:#ffffff;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.15);}
+.ix-sidebar-link.active .ix-icon{stroke:#60a5fa;}
+.ix-sidebar-divider{height:1px;background:#16365a;margin:16px 6px 14px;}
+.ix-sidebar-workflow-summary{display:flex;flex-direction:column;gap:3px;}
+.ix-sidebar-sublink{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:6px;font-size:12px;font-weight:500;color:#a3b8d0;text-decoration:none;transition:all 0.15s ease;}
+.ix-sidebar-sublink span{color:inherit;font-size:12px;}
+.ix-sidebar-sublink:hover{background:rgba(255,255,255,0.05);color:#ffffff;}
+.gate-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.gate-dot.green{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,0.5);}
+.gate-dot.amber{background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,0.5);}
+.ix-sidebar-footer{margin-top:auto;padding-top:16px;}
+.sidebar-status-card{padding:9px 11px;border-radius:6px;background:#102844;border:1px solid #1a3f68;display:flex;align-items:center;gap:9px;}
+.s-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,0.6);flex-shrink:0;}
+.s-title{font-size:11px;font-weight:700;color:#ffffff;line-height:1.2;}
+.s-sub{font-size:9.5px;color:#8da2be;line-height:1.2;}
+.ix-main-column{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--ix-bg);}
+.ix-sidebar-backdrop{display:none;}
+@media(max-width:1080px){.ix-sidebar{width:190px;flex:0 0 190px;}}
+@media(max-width:900px){
+  .ix-sidebar{position:fixed;top:60px;left:-260px;width:250px;height:calc(100vh - 60px);z-index:1000;transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:8px 0 32px rgba(0,0,0,0.40);}
+  .ix-sidebar.drawer-open{transform:translateX(260px);}
+  .ix-sidebar-backdrop{display:none;position:fixed;inset:60px 0 0 0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:999;}
+  .ix-sidebar-backdrop.active{display:block;}
+}
+
+/* ── Horizontal Institutional Workflow Indicator ── */
+.ix-workflow-tracker{background:#ffffff;border-bottom:1px solid var(--ix-border);padding:8px 28px;display:flex;align-items:center;justify-content:flex-start;gap:20px;box-shadow:0 1px 2px rgba(15,23,42,0.02);}
+.ix-wt-title{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:0.08em;color:var(--ix-primary);text-transform:uppercase;flex-shrink:0;}
+.ix-wt-steps{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.ix-wt-steps::-webkit-scrollbar{display:none;}
+.ix-wt-step{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:5px;font-size:12px;font-weight:600;color:var(--ix-muted);text-decoration:none;background:#f8fafc;border:1px solid #e2e8f0;transition:all 0.15s ease;white-space:nowrap;}
+.ix-wt-step:hover{background:#f1f5f9;color:var(--ix-text);}
+.ix-wt-step.active{background:var(--blue-50);border-color:var(--blue-200);color:var(--blue-700);font-weight:700;}
+.ix-wt-num{font-size:9.5px;font-weight:800;background:#dbeafe;color:var(--blue-800);padding:1px 5px;border-radius:3px;}
+.ix-wt-sep{color:#94a3b8;font-size:12px;}
+.ix-wt-badge{flex-shrink:0;}
+.ix-wt-status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green-600);margin-right:4px;}
+.ix-wt-badge span{font-size:11px;font-weight:700;color:var(--green-700);background:var(--green-50);border:1px solid var(--green-100);padding:3px 9px;border-radius:4px;}
+
+/* ── Institutional Hero Section ── */
+.gov-hero{background:#ffffff;border-bottom:1px solid var(--ix-border);display:grid;grid-template-columns:1.05fr 0.95fr;gap:24px;align-items:center;padding:24px 28px 20px;position:relative;overflow:hidden;min-height:385px;}
+.gov-hero-left{position:relative;z-index:4;max-width:530px;}
+.gov-hero-chips{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.gov-chip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:0.06em;display:inline-flex;align-items:center;gap:5px;}
+.gov-chip.saffron{background:var(--ix-saffron-bg);color:var(--ix-saffron);border:1px solid var(--ix-saffron-border);}
+.gov-chip.navy{background:var(--blue-50);color:var(--blue-700);border:1px solid var(--blue-200);}
+.gov-chip.green{background:var(--green-50);color:var(--green-700);border:1px solid var(--green-100);}
+.gov-chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.gov-hero-title{font-family:var(--font-heading);font-weight:800;font-size:clamp(1.9rem,2.7vw,2.45rem);color:var(--ix-primary);line-height:1.15;letter-spacing:-0.025em;margin-bottom:10px;}
+.gov-hero-sub{font-size:13.5px;color:var(--ix-muted);line-height:1.58;max-width:490px;margin-bottom:16px;}
+.gov-hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.gov-trust-bar{display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #edf2f7;}
+.gov-trust-item{font-size:11.5px;font-weight:600;color:var(--ix-muted);display:inline-flex;align-items:center;gap:5px;}
+.gov-trust-item .chk{color:var(--green-600);font-weight:800;}
+.gov-hero-right{position:relative;height:100%;min-height:345px;display:flex;align-items:center;justify-content:flex-end;z-index:2;}
+
+/* ── Engines Section Institutional ── */
+.engines-section{background:var(--ix-dark);padding:32px 0;position:relative;}
+.engine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.engine-card{background:var(--ix-dark-card);border:1px solid #16365a;border-radius:var(--r-lg);padding:16px;transition:all var(--t-fast);}
+.engine-card:hover{background:#112a46;border-color:#204a78;transform:translateY(-2px);}
+.engine-icon{font-size:22px;margin-bottom:8px;}
+.engine-title{font-family:var(--font-heading);font-weight:800;font-size:15px;color:#ffffff;margin-bottom:4px;}
+.engine-desc{font-size:12px;color:#c7d6e8;line-height:1.5;}
+
+/* ── CTA Section Institutional ── */
+.cta-section{background:linear-gradient(135deg,#071526 0%,#0f294a 100%);padding:36px 0;text-align:center;position:relative;}
+
+@media(max-width:960px){
+  .gov-hero{grid-template-columns:1fr;padding:22px;}
+  .engine-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .nav-tagline-text{display:none!important;}
+}
+@media(max-width:600px){
+  .engine-grid{grid-template-columns:1fr;}
+  .ix-workflow-tracker{padding:8px 14px;}
+  .gov-console-grid{grid-template-columns:1fr;}
+}
+  </style>
+</head>
+<body data-page="index">
+  <!-- Top Institutional Utility Band (Government Portal Standard) -->
+  <div class="gov-top-band">
+    <div class="gov-top-inner">
+      <div class="gov-top-left">
+        <span class="flag-indicator" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>राष्ट्रीय स्टार्टअप नवाचार एवं अधिप्राप्ति मंच | National Startup Innovation &amp; Procurement Portal</span>
+      </div>
+      <div class="gov-top-right">
+        <a href="#hero" class="gov-top-link">Skip to Main Content</a>
+        <div class="gov-text-sizer" aria-label="Text size controls">
+          <button type="button" onclick="document.documentElement.style.fontSize='14px'" title="Decrease font size">A-</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='15px'" title="Normal font size">A</button>
+          <button type="button" onclick="document.documentElement.style.fontSize='16px'" title="Increase font size">A+</button>
+        </div>
+        <div class="gov-lang-select">
+          <span style="font-weight:700;color:#ffffff">English</span>
+          <span style="color:#64748b">|</span>
+          <span style="color:#cbd5e1">हिन्दी</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-tricolor-strip"></div>
+  </div>
+
+  <nav class="navbar" id="mainNav">
+    <div class="nav-inner" style="max-width:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:14px">
+        <a href="index.html" class="gov-header-brand" aria-label="InnovateX — Startup Procurement &amp; Innovation Platform">
+          <img src="img/innovatex-logo.jpg" alt="InnovateX — Startup Procurement &amp; Innovation Platform" class="gov-header-logo-img" />
+        </a>
+      </div>
+      <div class="nav-actions" style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span class="demo-label">📊 Demo Mode</span>
+        <div id="authArea" class="auth-area"></div>
+        <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div class="ix-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- App Shell: Left Sidebar + Main Content Column -->
+  <div class="ix-app-shell">
+    <!-- Left Sidebar Navigation -->
+    <aside class="ix-sidebar" id="ixSidebar">
+      <div class="ix-sidebar-inner">
+        <div class="ix-sidebar-heading">NAVIGATION</div>
+        <nav class="ix-sidebar-nav" id="sidebarNav">
+          <a href="index.html" class="ix-sidebar-link active">
+            <svg class="ix-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Home</span>
+          </a>
+          <a href="problem.html" class="ix-sidebar-link">
+            <svg class="ix-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Problems</span>
+          </a>
+          <a href="marketplace.html" class="ix-sidebar-link">
+            <svg class="ix-icon" viewBox="0 0 24 24"><path d="M3 9l2-5h14l2 5"/><path d="M21 9v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/><line x1="3" y1="9" x2="21" y2="9"/><path d="M10 13a2 2 0 0 0 4 0"/></svg>
+            <span>Marketplace</span>
+          </a>
+          <a href="ai-analysis.html" class="ix-sidebar-link">
+            <svg class="ix-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg>
+            <span>Solution Analysis</span>
+          </a>
+          <a href="collaborate.html" class="ix-sidebar-link">
+            <svg class="ix-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Collaborate</span>
+          </a>
+          <a href="pilot.html" class="ix-sidebar-link">
+            <svg class="ix-icon" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+            <span>Pilot</span>
+          </a>
+          <a href="dashboard.html" class="ix-sidebar-link" data-roles="startup,organization,admin">
+            <svg class="ix-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+            <span>Dashboard</span>
+          </a>
+        </nav>
+
+        <div class="ix-sidebar-divider"></div>
+
+        <div class="ix-sidebar-heading">WORKFLOW GATES</div>
+        <div class="ix-sidebar-workflow-summary">
+          <a href="procurement.html" class="ix-sidebar-sublink">
+            <span class="gate-dot green"></span>
+            <span>Procurement &amp; Scale</span>
+          </a>
+          <a href="index.html#payments-section" class="ix-sidebar-sublink">
+            <span class="gate-dot amber"></span>
+            <span>Startup Payments</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Column beside Sidebar -->
+    <main class="ix-main-column">
+      <!-- Compact Horizontal Institutional Workflow Indicator -->
+      <div class="ix-workflow-tracker" aria-label="Procurement Lifecycle">
+        <div class="ix-wt-title">
+          <svg class="ix-icon" viewBox="0 0 24 24" style="width:14px;height:14px"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>PROCUREMENT LIFECYCLE</span>
+        </div>
+        <div class="ix-wt-steps">
+          <a href="problem.html" class="ix-wt-step active" title="Step 1: Challenge Definition">
+            <span class="ix-wt-num">01</span>
+            <span class="ix-wt-name">Challenge</span>
+          </a>
+          <span class="ix-wt-sep" aria-hidden="true">&rarr;</span>
+          <a href="marketplace.html" class="ix-wt-step" title="Step 2: Startup Solutions Catalog">
+            <span class="ix-wt-num">02</span>
+            <span class="ix-wt-name">Solutions</span>
+          </a>
+          <span class="ix-wt-sep" aria-hidden="true">&rarr;</span>
+          <a href="ai-analysis.html" class="ix-wt-step" title="Step 3: Multi-Criteria Solution Analysis">
+            <span class="ix-wt-num">03</span>
+            <span class="ix-wt-name">Solution Analysis</span>
+          </a>
+          <span class="ix-wt-sep" aria-hidden="true">&rarr;</span>
+          <a href="expert-review.html" class="ix-wt-step" title="Step 4: Expert Decision &amp; Governance">
+            <span class="ix-wt-num">04</span>
+            <span class="ix-wt-name">Expert Decisions</span>
+          </a>
+          <span class="ix-wt-sep" aria-hidden="true">&rarr;</span>
+          <a href="pilot.html" class="ix-wt-step" title="Step 5: Milestone Pilot Sandbox">
+            <span class="ix-wt-num">05</span>
+            <span class="ix-wt-name">Pilot</span>
+          </a>
+          <span class="ix-wt-sep" aria-hidden="true">&rarr;</span>
+          <a href="procurement.html" class="ix-wt-step" title="Step 6: Scale &amp; Disbursal">
+            <span class="ix-wt-num">06</span>
+            <span class="ix-wt-name">Scale</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Institutional Hero Section -->
+      <section class="gov-hero" id="hero">
+        <div class="gov-hero-left">
+          <div class="gov-hero-chips">
+            <span class="gov-chip saffron"><span class="gov-chip-dot"></span> DPIIT Framework Aligned</span>
+            <span class="gov-chip navy">National Startup Intelligence</span>
+            <span class="gov-chip green">Audited Milestone Pilots</span>
+          </div>
+          <h1 class="gov-hero-title">Turn startup ideas into <span style="color:var(--ix-saffron)">real-world impact.</span></h1>
+          <div style="font-size:12.5px;font-weight:700;color:var(--ix-primary);margin-bottom:8px;letter-spacing:0.04em;text-transform:uppercase">National Startup Procurement &amp; Innovation Intelligence Platform</div>
+          <p class="gov-hero-sub">A structured digital public platform bridging government challenges with the discovery of startup solutions through solution analysis, collaborative evaluation, and milestone-governed pilot trials.</p>
+          <div class="gov-hero-actions">
+            <a href="problem.html" class="btn btn-primary">Explore Challenges &rarr;</a>
+            <a href="marketplace.html" class="btn btn-outline">E-Marketplace</a>
+            <a href="procurement.html" class="btn btn-ghost">Procurement Framework</a>
+          </div>
+          <div class="gov-trust-bar">
+            <div class="gov-trust-item"><span class="chk">✓</span> <span>100% Milestone-Governed Pilots</span></div>
+            <div class="gov-trust-item"><span class="chk">✓</span> <span>PFMS Disbursement Rails</span></div>
+          </div>
+        </div>
+        <div class="gov-hero-right">
+          <!-- Parliament Background Visual with Tricolor Wave -->
+          <div class="gov-hero-parliament-layer" aria-hidden="true">
+            <img src="img/parliament-hero.png" alt="Indian Parliament and Tricolor Wave" class="gov-parliament-bg-img" />
+            <div class="gov-parliament-gradient-edge"></div>
+          </div>
+
+          <!-- Feature Icons Arranged as Top: Innovate, Manage | Bottom: Collaborate, Challenge, Pilot / Scale -->
+          <div class="gov-hero-cards-grid" aria-label="Key Platform Actions">
+            <a href="ai-analysis.html" class="hero-feature-card hfc-innovate" title="Innovate: Multi-Criteria AI Review &amp; Scoring">
+              <div class="hfc-icon-wrap blue">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.3 4.7 3.2 6 .5.4.8 1 1 1.7.1.5.4.3.8.3h4c.4 0 .7.2.8-.3.2-.7.5-1.3 1-1.7 1.9-1.3 3.2-3.5 3.2-6a7 7 0 0 0-7-7z"/></svg>
+              </div>
+              <span class="hfc-label">Innovate</span>
+            </a>
+
+            <a href="procurement.html" class="hero-feature-card hfc-manage" title="Manage: Institutional Procurement &amp; Disbursal">
+              <div class="hfc-icon-wrap saffron">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/></svg>
+              </div>
+              <span class="hfc-label">Manage</span>
+            </a>
+
+            <a href="collaborate.html" class="hero-feature-card hfc-collaborate" title="Collaborate: Multi-Solution Collaboration Clustering">
+              <div class="hfc-icon-wrap green">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <span class="hfc-label">Collaborate</span>
+            </a>
+
+            <a href="problem.html" class="hero-feature-card hfc-challenge" title="Challenge: Institutional Problem Statements">
+              <div class="hfc-icon-wrap blue">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+              </div>
+              <span class="hfc-label">Challenge</span>
+            </a>
+
+            <a href="pilot.html" class="hero-feature-card hfc-pilot" title="Pilot / Scale: Milestone Sandbox &amp; Verification">
+              <div class="hfc-icon-wrap orange">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+              </div>
+              <span class="hfc-label">Pilot / Scale</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+  <!-- ============================================================
+       1. THE INNOVATEX METHOD (Balanced, Full-Width, 6-Step Journey)
+       ============================================================ -->
+  <section class="ix-home-compact" style="padding:24px 0 28px;background:var(--ix-bg)">
+    <div class="method-container" style="padding:0 28px;max-width:100%">
+      <div class="method-header reveal" style="margin-bottom:16px">
+        <div class="method-header-main">
+          <div class="section-label">THE INNOVATEX METHOD</div>
+          <h2 class="section-heading" style="margin-top:var(--sp-2);font-size:clamp(1.3rem,2.1vw,1.75rem)">The InnovateX Method: From Problem to Proof.</h2>
+          <p class="method-subtitle" style="font-size:13.5px;line-height:1.5">A clear six-step journey that turns a real challenge into comparable solutions, expert decisions, real-world validation and evidence for scale.</p>
+        </div>
+        <div class="method-header-badges">
+          <div class="method-meta-box" style="padding:6px 14px">
+            <div class="meta-stat-group">
+              <span class="meta-val" style="font-size:16px">06</span>
+              <span class="meta-lbl" style="font-size:9.5px">Verification Gates</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-stat-group">
+              <span class="meta-val" style="font-size:16px">100%</span>
+              <span class="meta-lbl" style="font-size:9.5px">Evidence-Driven</span>
+            </div>
+            <div class="meta-divider"></div>
+            <div class="meta-stat-group">
+              <span class="meta-val" style="font-size:16px">Human</span>
+              <span class="meta-lbl" style="font-size:9.5px">Final Gate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="method-journey-flow">
+        <div class="journey-track" aria-hidden="true"></div>
+        <div class="journey-how">
+          <!-- Step 01 -->
+          <div class="jhow-step reveal delay-1">
+            <div class="jhow-card-header">
+              <span class="jhow-num n1">01</span>
+              <span class="jhow-icon-circle blue">
+                <svg class="ix-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Problem</div>
+            <div class="jhow-desc">Organisations define the challenge, constraints and expected outcome.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 1 · Scoping</span></div>
+          </div>
+          <!-- Step 02 -->
+          <div class="jhow-step reveal delay-2">
+            <div class="jhow-card-header">
+              <span class="jhow-num n2">02</span>
+              <span class="jhow-icon-circle violet">
+                <svg class="ix-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Solutions</div>
+            <div class="jhow-desc">Startups submit structured approaches, technology and impact.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 2 · Discovery</span></div>
+          </div>
+          <!-- Step 03 -->
+          <div class="jhow-step reveal delay-3">
+            <div class="jhow-card-header">
+              <span class="jhow-num n3">03</span>
+              <span class="jhow-icon-circle indigo">
+                <svg class="ix-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Solution Analysis</div>
+            <div class="jhow-desc">Six intelligence dimensions make strengths, gaps and risks visible.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 3 · 6D Analysis</span></div>
+          </div>
+          <!-- Step 04 -->
+          <div class="jhow-step reveal delay-4">
+            <div class="jhow-card-header">
+              <span class="jhow-num n4">04</span>
+              <span class="jhow-icon-circle amber">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 12 14 22 4"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Expert Decisions</div>
+            <div class="jhow-desc">Experts validate readiness and choose the next workflow checkpoint.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 4 · Governance</span></div>
+          </div>
+          <!-- Step 05 -->
+          <div class="jhow-step reveal delay-5">
+            <div class="jhow-card-header">
+              <span class="jhow-num n5">05</span>
+              <span class="jhow-icon-circle cyan">
+                <svg class="ix-icon" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Pilot</div>
+            <div class="jhow-desc">The selected solution is tested against real milestones and KPIs.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 5 · Sandbox</span></div>
+          </div>
+          <!-- Step 06 -->
+          <div class="jhow-step reveal delay-6">
+            <div class="jhow-card-header">
+              <span class="jhow-num n6">06</span>
+              <span class="jhow-icon-circle green">
+                <svg class="ix-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              </span>
+            </div>
+            <div class="jhow-title">Scale</div>
+            <div class="jhow-desc">Observed pilot evidence supports the decision to procure, scale or iterate.</div>
+            <div class="jhow-footer"><span class="jhow-pill">Gate 6 · Procurement</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       2. PROCUREMENT ECOSYSTEM (Connected Workflow Architecture)
+       ============================================================ -->
+  <section class="ix-ecosystem-section" style="padding:28px 0;background:#fff;border-top:1px solid var(--ix-border);border-bottom:1px solid var(--ix-border)">
+    <div class="method-container" style="padding:0 28px;max-width:100%">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px" class="reveal">
+        <div>
+          <div class="section-label">END-TO-END PROCUREMENT ARCHITECTURE</div>
+          <h2 class="section-heading" style="font-size:clamp(1.3rem,2.2vw,1.75rem);margin-top:var(--sp-2)">The Procurement Ecosystem</h2>
+          <p style="color:var(--ix-muted);font-size:13.5px;max-width:640px;margin-top:4px;line-height:1.5">How challenges, marketplace solutions, AI intelligence, and pilot proof connect directly to timely financial settlement.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="problem.html" class="btn btn-outline btn-sm">Explore Problems</a>
+          <a href="marketplace.html" class="btn btn-primary btn-sm">E-Marketplace &rarr;</a>
+        </div>
+      </div>
+      <div class="ecosystem-flow-grid reveal">
+        <!-- 1. DISCOVER -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="eco-step-title">DISCOVER</div>
+          <p class="eco-step-desc">Define real-world challenges and discover pre-screened startup solutions in the E-Marketplace.</p>
+          <div class="eco-step-link"><a href="marketplace.html">View Solutions &rarr;</a></div>
+        </div>
+        <!-- 2. REVIEW -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+          <div class="eco-step-title">REVIEW</div>
+          <p class="eco-step-desc">Evaluate feasibility, relevance, risk and problem fit through 6-dimension AI scoring.</p>
+          <div class="eco-step-link"><a href="ai-analysis.html">Solution Analysis &rarr;</a></div>
+        </div>
+        <!-- 3. COLLABORATE -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="eco-step-title">COLLABORATE</div>
+          <p class="eco-step-desc">Detect complementary startups to combine capabilities and resolve multi-faceted problem gaps.</p>
+          <div class="eco-step-link"><a href="collaborate.html">Collaboration &rarr;</a></div>
+        </div>
+        <!-- 4. PROCURE -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+          <div class="eco-step-title">PROCURE</div>
+          <p class="eco-step-desc">Initiate structured procurement requests with standard templates and public criteria.</p>
+          <div class="eco-step-link"><a href="procurement.html">Procurement &rarr;</a></div>
+        </div>
+        <!-- 5. PILOT -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="eco-step-title">PILOT</div>
+          <p class="eco-step-desc">Validate performance in controlled sandboxes tracking target-versus-actual milestone KPIs.</p>
+          <div class="eco-step-link"><a href="pilot.html">Pilot Tracking &rarr;</a></div>
+        </div>
+        <!-- 6. PAY -->
+        <div class="eco-step-card">
+          <div class="eco-icon-wrap"><svg class="ix-icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+          <div class="eco-step-title">PAY</div>
+          <p class="eco-step-desc">Release transparent milestone disbursements on time upon verified performance evidence.</p>
+          <div class="eco-step-link"><a href="#payments-section">Track Payments &rarr;</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       3. INNOVATEX INTELLIGENCE ENGINE (Preserved Section)
+       ============================================================ -->
+  <section class="engines-section ix-home-compact" style="padding:32px 0">
+    <div class="container" style="max-width:100%;padding:0 28px">
+      <div style="text-align:center;margin-bottom:20px;position:relative;z-index:1" class="reveal">
+        <div class="eyebrow" style="color:var(--ix-saffron);font-weight:800;letter-spacing:0.1em">INNOVATEX INTELLIGENCE ENGINE</div>
+        <h2 class="section-heading" style="color:#fff;margin-top:var(--sp-2);font-size:clamp(1.3rem,2.2vw,1.75rem)">InnovateX Intelligence Engine</h2>
+        <p style="color:#c7d6e8;max-width:620px;margin:6px auto 0;font-size:14px">Six intelligence engines working as one system.</p>
+      </div>
+      <div class="engine-grid" style="position:relative;z-index:1">
+        <div class="engine-card reveal delay-1"><div class="engine-icon">⚡</div><div class="engine-title">Scoring</div><div class="engine-desc">Relevance, innovation, feasibility, impact, scalability and cost efficiency.</div></div>
+        <div class="engine-card reveal delay-2"><div class="engine-icon">🧠</div><div class="engine-title">Similarity</div><div class="engine-desc">Find related approaches and patterns across submitted solutions.</div></div>
+        <div class="engine-card reveal delay-3"><div class="engine-icon">🤝</div><div class="engine-title">Collaboration</div><div class="engine-desc">Detect complementary capabilities that can create a stronger combined solution.</div></div>
+        <div class="engine-card reveal delay-4"><div class="engine-icon">✓</div><div class="engine-title">Eligibility</div><div class="engine-desc">Keep structured platform eligibility checks clear and separate from certification.</div></div>
+        <div class="engine-card reveal delay-5"><div class="engine-icon">⚠</div><div class="engine-title">Risk</div><div class="engine-desc">Surface deployment, cost, connectivity and scalability concerns before a pilot.</div></div>
+        <div class="engine-card reveal delay-6"><div class="engine-icon">✦</div><div class="engine-title">Ask IX</div><div class="engine-desc">Explore actual InnovateX data, decisions, collaboration and pilot evidence conversationally.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       4. TIMELY STARTUP PAYMENTS (Feature & Ledger Dashboard)
+       ============================================================ -->
+  <section class="payments-section" id="payments-section" style="padding:32px 0;background:var(--ix-bg);border-top:1px solid var(--ix-border)">
+    <div class="method-container" style="padding:0 28px;max-width:100%">
+      <div class="payments-grid">
+        <!-- Left: Feature Card -->
+        <div class="reveal">
+          <div class="section-label">FINANCIAL TRANSPARENCY &amp; GOVERNANCE</div>
+          <h2 class="section-heading" style="margin-top:var(--sp-2);font-size:clamp(1.3rem,2.2vw,1.75rem)">Timely Startup Payments</h2>
+          <p style="color:var(--ix-muted);font-size:14px;line-height:1.6;margin-top:6px">
+            Track procurement payments from invoice submission to completion, helping startups get paid on time and organisations maintain transparent financial workflows.
+          </p>
+
+          <div class="payment-points-list" style="margin:24px 0">
+            <div class="payment-point-item">
+              <span class="point-icon-check">✓</span>
+              <div>
+                <strong>Invoice tracking</strong>
+                <p>Automated milestone validation directly connected to pilot KPI completion evidence.</p>
+              </div>
+            </div>
+            <div class="payment-point-item">
+              <span class="point-icon-check">✓</span>
+              <div>
+                <strong>Payment status visibility</strong>
+                <p>Real-time audit status accessible to startups, procurement officers, and auditors.</p>
+              </div>
+            </div>
+            <div class="payment-point-item">
+              <span class="point-icon-check">✓</span>
+              <div>
+                <strong>Due-date reminders</strong>
+                <p>Proactive alerts ensure administrative SLA compliance and eliminate delayed disbursals.</p>
+              </div>
+            </div>
+            <div class="payment-point-item">
+              <span class="point-icon-check">✓</span>
+              <div>
+                <strong>Transparent transaction history</strong>
+                <p>Immutable ledger reference codes mapped to public treasury and PFMS channels.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+            <a href="marketplace.html" class="btn btn-primary">E-Marketplace &rarr;</a>
+            <a href="procurement.html" class="btn btn-outline">Procurement Workflow &rarr;</a>
+          </div>
+        </div>
+
+        <!-- Right: Payment Tracker Dashboard Card -->
+        <div class="reveal delay-2">
+          <div class="card payment-dashboard-card">
+            <div class="payment-card-top">
+              <div>
+                <span class="eyebrow" style="font-size:10px">TREASURY MILESTONE TRACKER</span>
+                <h3 style="font-size:18px;margin-top:2px">Procurement Payment Ledger</h3>
+              </div>
+              <span class="badge badge-amber">● Prototype Demo Data</span>
+            </div>
+
+            <!-- Visual Status Flow -->
+            <div class="payment-flow-tracker">
+              <div class="flow-pill done"><span>1</span> Approved</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill done"><span>2</span> Contract</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill done"><span>3</span> Invoice</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill active"><span>4</span> Processing</div>
+              <div class="flow-sep">›</div>
+              <div class="flow-pill"><span>5</span> Completed</div>
+            </div>
+
+            <!-- Main Active Highlight -->
+            <div class="active-disbursement-box">
+              <div class="disb-header">
+                <div>
+                  <span class="disb-tag">Active Disbursal</span>
+                  <h4 style="font-size:16px;margin-top:4px">Smart Irrigation Pilot</h4>
+                  <div style="font-size:12.5px;color:var(--ix-muted);display:flex;align-items:center;gap:6px;margin-top:2px">
+                    <span>Startup: <strong>AgriNova Technologies</strong></span>
+                    <span class="badge badge-blue" style="font-size:9.5px;padding:1px 6px">✓ DPIIT Verified</span>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div class="disb-amount">₹2,50,000</div>
+                  <span class="badge badge-amber" style="margin-top:4px">● Payment Processing</span>
+                </div>
+              </div>
+              <div class="disb-meta-grid">
+                <div><span>Invoice No</span><strong>INV-2026-014</strong></div>
+                <div><span>Due Date</span><strong>15 Oct 2026</strong></div>
+                <div><span>Channel</span><strong>PFMS Treasury</strong></div>
+                <div><span>Milestone</span><strong>Milestone 2 · Sensor Telemetry</strong></div>
+              </div>
+            </div>
+
+            <!-- Ledger Table of Other Startups -->
+            <div class="mini-ledger-wrap">
+              <div class="mini-ledger-title">Recent Milestone Disbursements</div>
+              <div class="mini-ledger-row">
+                <div class="ml-startup"><strong>CropSense AI</strong><span>Early Disease Detection</span></div>
+                <div class="ml-inv">INV-2026-009</div>
+                <div class="ml-amount">₹3,50,000</div>
+                <div class="ml-status"><span class="badge badge-green">✓ Completed</span></div>
+              </div>
+              <div class="mini-ledger-row">
+                <div class="ml-startup"><strong>FarmVision</strong><span>Satellite Crop Canopy</span></div>
+                <div class="ml-inv">INV-2026-021</div>
+                <div class="ml-amount">₹1,80,000</div>
+                <div class="ml-status"><span class="badge badge-indigo">Invoice Submitted</span></div>
+              </div>
+              <div class="mini-ledger-row">
+                <div class="ml-startup"><strong>EcoGrid Smart Energy</strong><span>Industrial Optimization</span></div>
+                <div class="ml-inv">INV-2026-042</div>
+                <div class="ml-amount">₹3,00,000</div>
+                <div class="ml-status"><span class="badge badge-blue">Contract Confirmed</span></div>
+              </div>
+            </div>
+
+            <div class="payment-card-footer">
+              <span style="font-size:11.5px;color:var(--ix-muted)">SLA target: 100% on-time milestone disbursals upon verified proof</span>
+              <a href="procurement.html" class="btn btn-ghost btn-sm">Full Ledger &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       5. CTA SECTION (Explore the Workflow)
+       ============================================================ -->
+  <section class="cta-section ix-home-compact" style="padding:32px 0">
+    <div class="container" style="position:relative;z-index:1">
+      <div class="reveal">
+        <div class="eyebrow" style="color:var(--ix-saffron);font-weight:800;letter-spacing:0.1em;margin-bottom:var(--sp-2)">Explore the workflow</div>
+        <h2 class="section-heading" style="color:#fff;margin-bottom:var(--sp-2);font-size:clamp(1.3rem,2.2vw,1.75rem)">See how an idea becomes evidence.</h2>
+        <p style="color:#c7d6e8;margin-bottom:18px;font-size:14.5px;max-width:680px;margin-left:auto;margin-right:auto">Start with a challenge, inspect the intelligence layer, then follow the same solution into collaboration and pilot validation.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="problem.html" class="btn btn-primary" style="font-weight:700">Explore Challenges &rarr;</a>
+          <a href="marketplace.html" class="btn btn-outline" style="background:transparent;color:#ffffff;border:1.5px solid rgba(255,255,255,0.75);font-weight:700">E-Marketplace &rarr;</a>
+          <a href="ai-analysis.html" class="btn btn-dark" style="background:rgba(255,255,255,0.12);color:#ffffff;border:1px solid rgba(255,255,255,0.35);font-weight:700">See Solution Analysis</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       6. ENTERPRISE FOOTER
+       ============================================================ -->
+  <footer class="ix-site-footer" style="padding:34px 0 20px">
+    <div class="method-container" style="padding:0 28px;max-width:100%">
+      <div class="footer-grid" style="margin-bottom:24px">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-mark">X</div>
+            <span>Innovate<span class="accent" style="color:var(--ix-accent)">X</span></span>
+          </div>
+          <p>AI-powered startup procurement intelligence, multi-solution collaboration discovery, and evidence-driven pilot governance for modern public institutions.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="problem.html">Problems &amp; Challenges</a></li>
+            <li><a href="marketplace.html">E-Marketplace</a></li>
+            <li><a href="ai-analysis.html">AI Review &amp; Scoring</a></li>
+            <li><a href="collaborate.html">Collaboration Detection</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Workflow</h4>
+          <ul>
+            <li><a href="pilot.html">Pilot Sandbox</a></li>
+            <li><a href="procurement.html">Procurement &amp; Scale</a></li>
+            <li><a href="expert-review.html">Expert Evaluation</a></li>
+            <li><a href="#payments-section">Startup Payments</a></li>
+            <li><a href="startup-verification.html">Startup Verification</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Governance</h4>
+          <ul>
+            <li><span style="color:rgba(255,255,255,0.85);font-weight:700">SIH 2024 Working Prototype</span></li>
+            <li><span style="color:rgba(255,255,255,0.80)">Simulated Treasury &amp; PFMS</span></li>
+            <li><span style="color:rgba(255,255,255,0.80)">Human-in-the-Loop Decisions</span></li>
+            <li><span style="color:rgba(255,255,255,0.80)">DPIIT Framework Compliant</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom" style="padding-top:16px">
+        <div>&copy; 2026 InnovateX Platform. Enterprise &amp; Public Sector Startup Procurement Intelligence.</div>
+        <div>Prototype Demonstration Environment &middot; All Rights Reserved</div>
+      </div>
+    </div>
+  </footer>
+
+    </main>
+  </div><!-- /.ix-app-shell -->
+
+  <div class="toast-container"></div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    window.addEventListener('scroll',()=>{document.getElementById('mainNav')?.classList.toggle('scrolled',window.scrollY>20);},{passive:true});
+    document.getElementById('navHamburger')?.addEventListener('click',()=>{
+      document.getElementById('ixSidebar')?.classList.toggle('drawer-open');
+      document.getElementById('sidebarBackdrop')?.classList.toggle('active');
+      document.getElementById('navHamburger')?.classList.toggle('open');
+    });
+    document.getElementById('sidebarBackdrop')?.addEventListener('click',()=>{
+      document.getElementById('ixSidebar')?.classList.remove('drawer-open');
+      document.getElementById('sidebarBackdrop')?.classList.remove('active');
+      document.getElementById('navHamburger')?.classList.remove('open');
+    });
+    document.querySelectorAll('.ix-sidebar-link, .ix-sidebar-sublink').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('ixSidebar')?.classList.remove('drawer-open');
+        document.getElementById('sidebarBackdrop')?.classList.remove('active');
+        document.getElementById('navHamburger')?.classList.remove('open');
+      });
+    });
+    const revealEls=document.querySelectorAll('.reveal');
+    if('IntersectionObserver' in window){
+      const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});},{threshold:0.08});
+      revealEls.forEach(el=>ro.observe(el));
+    }else{
+      revealEls.forEach(el=>el.classList.add('visible'));
+    }
+  </script>
+  <script src="js/askix.js"></script>
+</body>
+</html>
